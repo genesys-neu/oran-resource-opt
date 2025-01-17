@@ -122,4 +122,4 @@ done
 "
 
 # call the traffic script
-bash ./run_traffic_rb_datagen_deterministic.sh $1
+bash ./run_traffic_rb_datagen4.sh $1
