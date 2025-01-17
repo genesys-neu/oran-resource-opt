@@ -24,16 +24,6 @@ echo "Starting the channel emulator"
 sshpass -p "scope" ssh $gnb 'colosseumcli rf start 10042 -c'
 sleep 10
 
-
-#interferer=$(sed '10!d' $1)
-## chose only one of the the following lines for ul or dl based interference
-## for ul, uncomment the following line
-#sshpass -p "sunflower" scp uhd_tx_tone_ul.sh $interferer:/root/utils/uhd_tx_tone.sh
-## for dl, uncomment the following line
-##sshpass -p "sunflower" scp uhd_tx_tone.sh genesys-075:/root/utils/uhd_tx_tone.sh
-#
-#listener=$(sed '11!d' $1)
-
 ric=$(sed '12!d' $1)
 
 # start the gNB and UEs
@@ -41,8 +31,8 @@ for num in $(seq 1 11); do
     line=$(sed -n "${num}p" "$1")
     echo "Starting SRN: $line"
     sshpass -p "scope" scp radio_rb.conf $line:/root/radio_api/radio_rb.conf
-    sshpass -p "scope" ssh $line "cd /root/radio_api && python3 scope_start.py --config-file radio_IMPACT_rb.conf" &
-    sshpass -p "scope" rsync -avz --exclude 'Impact/' ./raw/ $line:/root/TRACTOR/raw
+    sshpass -p "scope" ssh $line "cd /root/radio_api && python3 scope_start.py --config-file radio_rb.conf" &
+    sshpass -p "scope" rsync -avz ./raw/ $line:/root/TRACTOR/raw
     if [ $line = $gnb ]
     then
       echo "Copying new csv_reader.c to gNB"
@@ -101,13 +91,6 @@ sshpass -p "ChangeMe" ssh $ric 'docker exec sample-xapp-24 mv /home/sample-xapp/
 echo "Starting the xApp"
 gnome-terminal -- bash -c "sshpass -p 'ChangeMe' ssh $ric 'docker exec -i sample-xapp-24 bash -c \"rm /home/*.log && cd /home/sample-xapp/ && ./run_xapp_IMPACT.sh\"'; bash" &
 
-#sleep 20
-#echo "Starting the listener"
-## choose UL or DL listener
-## for downlink, set th frequency to 0.980e9
-## for uplink, set the frequency to 1.020e9
-#gnome-terminal -- bash -c "sshpass -p 'sunflower' ssh -t $listener '/usr/local/lib/uhd/examples/rx_ascii_art_dft --freq 1.020e9 --rate 10e6 --gain 20 --ref-lvl -25 --dyn-rng 60 --frame-rate 15'; bash" &
-
 sleep 30
 clear -x
 echo "Configured all SRNs"
@@ -122,4 +105,4 @@ done
 "
 
 # call the traffic script
-bash ./run_traffic_rb_datagen4.sh $1
+bash ./run_traffic.sh $1
