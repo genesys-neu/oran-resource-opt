@@ -1,0 +1,18 @@
+Feature,Min,Max
+dl_mcs,0.0,28.0
+dl_n_samples,0.0,2554.0
+dl_buffer [bytes],0.0,193343.0
+tx_brate downlink [Mbps],0.0,20.0
+tx_pkts downlink,0.0,992.0
+dl_cqi,0.1,15.0
+ul_mcs,0.0,31.0
+ul_n_samples,0.0,2042.0
+ul_buffer [bytes],0.0,597522.0
+rx_brate uplink [Mbps],0.0,15.0
+rx_pkts uplink,0.0,753.0
+rx_errors uplink (%),0.0,100.299
+ul_sinr,0.0,45.6637
+phr,-23.0,38.0
+sum_requested_prbs,0.0,49550.0
+sum_granted_prbs,0.0,30036.0
+ul_turbo_iters,0.0,10.0

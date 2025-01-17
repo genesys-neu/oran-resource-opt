@@ -1,0 +1,4 @@
+For each round of evaluation:
+1. Put all the data into the corresponding folders
+1. Run process_data.py for all data folders (set "path_to_read" and "path_to_save" to the same folder)
+2. Run compare_perf for the corresponding round (set "test_round")

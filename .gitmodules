@@ -1,0 +1,6 @@
+[submodule "colosseum-scope-e2"]
+	path = colosseum-scope-e2
+	url = https://github.com/wan-sdr/colosseum-scope-e2
+[submodule "colosseum-scope"]
+	path = colosseum-scope
+	url = https://github.com/wan-sdr/colosseum-scope
