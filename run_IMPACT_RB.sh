@@ -40,7 +40,7 @@ ric=$(sed '12!d' $1)
 for num in $(seq 1 11); do
     line=$(sed -n "${num}p" "$1")
     echo "Starting SRN: $line"
-    sshpass -p "scope" scp radio_IMPACT_rb.conf $line:/root/radio_api/radio_IMPACT_rb.conf
+    sshpass -p "scope" scp radio_rb.conf $line:/root/radio_api/radio_rb.conf
     sshpass -p "scope" ssh $line "cd /root/radio_api && python3 scope_start.py --config-file radio_IMPACT_rb.conf" &
     sshpass -p "scope" rsync -avz --exclude 'Impact/' ./raw/ $line:/root/TRACTOR/raw
     if [ $line = $gnb ]
