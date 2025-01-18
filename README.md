@@ -78,10 +78,6 @@ The `process_log_files.sh` script processes log files and removes small CSV file
    - Reports the current number of lines in the log file and checks that the previous line count doesn’t exceed the current line count.
 4. **Final Report**: Outputs the final line count from the last sub-directory's log file.
 
-### Key Points:
-- Deletes small CSV files (≤ 10 rows).
-- Trims log files to keep only new entries.
-
 
 ## Disclaimer
 These scripts are provided as-is and may require customization based on individual network configurations and environment setups.
