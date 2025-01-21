@@ -37,7 +37,6 @@ This script manages the training and evaluation of the traffic classification mo
 
 ### Features
 - Primarily supports Transformer model.
-- Allows for dynamic selection of hyperparameters.
 - Outputs detailed logs and metrics for performance evaluation.
 - Normalizes the data using precomputed feature statistics.
 - Splits the dataset into training, validation, and test sets.
@@ -52,7 +51,7 @@ python train_test.py -f <training_dataset.csv> -t <identifier_for_this_model> -s
 - `--file_input` or `-f`: Path to the file containing the consolidated data, `default='final_dataset.csv'`.
 - `--trial_version` or `-t`: Description of the model used for naming.
 - `--slice_length` or `-s`: Number of samples in time used for each classification decision, `default=32`.
-- `--num_heads` or `-nh`: Number of transformer heads to use, `default=32`.
+- `--num_heads` or `-nh`: Number of transformer heads to use, `default=1`.
 - `--pretrained_model` or `-p`: If you are fine-tuning a pre-trained model, provide the path to the pretrained model. Otherwise, training will be done from scratch.
 - `--feature_status`: Path to the file containing the feature stats, `default='feature_stats.csv'`.
 
