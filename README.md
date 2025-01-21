@@ -2,7 +2,7 @@
 
 ## Introduction
 This repository focuses on a rapidly deployable Open RAN framework with automated setup and experiment execution in the Colosseum testbed.
-This repository automates the setup for running traffic and interference simulations in a 5G network environment using Bash scripts. It streamlines the configuration of various network components and initiates the necessary actions to simulate network traffic and interference.
+This repository automates the setup for running traffic and interference simulations in a cellular ORAN network environment using Bash scripts. It streamlines the configuration of various network components and initiates the necessary actions to simulate network traffic and interference.
 
 You must first make a reservation in Colosseum for 2 to 12 nodes. Use the following nodes:
 - IMPACT-gNB for the gNB
