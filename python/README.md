@@ -25,7 +25,7 @@ This script preprocesses datasets for training and testing the traffic classific
 ### Usage
 Before running the script, you may need to update the key variables:
 ```python
-directories_file = 'directories.txt'  # Replace with your list of directories .txt file path
+directories_file = 'directories.txt'  # Replace with your list_of_directories.txt file path
 output_file = 'combined_metrics.csv'
 stats_file = 'feature_stats.csv'
 ```
