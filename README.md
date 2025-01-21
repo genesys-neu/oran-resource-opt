@@ -1,4 +1,4 @@
-# Dynamic Open RAN Optimization Framework in Colosseum 
+# Dynamic Open RAN Optimization Framework using Colosseum 
 
 ## Introduction
 This repository focuses on a rapidly deployable Open RAN framework with automated setup and experiment execution in the Colosseum testbed.
