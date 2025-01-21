@@ -79,6 +79,18 @@ The `process_log_files.sh` script processes log files and removes small CSV file
 4. **Final Report**: Outputs the final line count from the last sub-directory's log file.
 
 
+## Traffic Classification
+All Traffic Classification training and analysis files can be found in the python subdirectory.
+
+
+## Utils
+The utils subdirectory contains several utility scripts primarily focused on the PRB optimization. All RL policies related to PRB optimization are found here.
+
+
+## Traffic Traces
+All the traffic traces used for both traffic classification and PRB optimization are in the raw subdirectory.
+
+
 ## Disclaimer
 These scripts are provided as-is and may require customization based on individual network configurations and environment setups.
 
