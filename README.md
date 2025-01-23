@@ -36,13 +36,114 @@ The `run_experiment.sh` script will automatically perform the following actions:
 6. **Process Log Files**: Automatically collects logs and performs cleanup tasks to ensure a clean environment for subsequent experiments.
 
 
-## xAPPs
-This repository includes different example xApps. Each of the xApps supports the collection of metrics from multiple UEs, and different control actions.
+## xApp Framework
+This repository includes different example xApps. Each of the xApps supports the collection of metrics from multiple UEs, and different control actions. The xApp framework is designed to support many different types of ML models.
 
-**TODO: Add a list of possible KPIs that are used**
+### `ue_data` Dictionary
+The `ue_data` dictionary contains the following keys:
 
-**TODO: Add the control actions that are supported**
+- **`last_timestamp`**: Tracks the last recorded timestamp for the UE.
+- **`kpi_slice`**: Indicates the slice to which the UE is assigned.
+- **`kpi_prb`**: Stores the Physical Resource Blocks (PRBs) allocated to the UE.
+- **`stale_counter`**: Tracks the number of stale data occurrences for the UE.
+- **`inference_kpi`**: A list storing KPIs for use in machine learning inference.
 
+### Available KPIs
+
+- **Downlink KPIs**
+  - `dl_mcs`: Downlink Modulation and Coding Scheme (MCS).
+  - `dl_n_samples`: Number of downlink samples.
+  - `dl_buffer [bytes]`: Size of the downlink buffer in bytes.
+  - `tx_brate downlink [Mbps]`: Downlink transmission bitrate in Mbps.
+  - `tx_pkts downlink`: Number of downlink transmitted packets.
+  - `tx_errors downlink (%)`: Percentage of errors in downlink transmissions.
+  - `dl_cqi`: Downlink Channel Quality Indicator (CQI).
+
+- **Uplink KPIs**
+  - `ul_mcs`: Uplink Modulation and Coding Scheme (MCS).
+  - `ul_n_samples`: Number of uplink samples.
+  - `ul_buffer [bytes]`: Size of the uplink buffer in bytes.
+  - `rx_brate uplink [Mbps]`: Uplink reception bitrate in Mbps.
+  - `rx_pkts uplink`: Number of uplink received packets.
+  - `rx_errors uplink (%)`: Percentage of errors in uplink receptions.
+  - `ul_sinr`: Uplink Signal-to-Interference-plus-Noise Ratio (SINR).
+
+- **Additional KPIs**
+  - `phr`: Power Headroom Report.
+  - `sum_requested_prbs`: Total number of requested Physical Resource Blocks (PRBs).
+  - `sum_granted_prbs`: Total number of granted Physical Resource Blocks (PRBs).
+  - `ul_turbo_iters`: Number of turbo decoding iterations for uplink transmissions.
+
+### Key Functions and Features
+
+1. **`count_ue_assignments()`**
+   - Counts the number of UEs assigned to each slice (mMTC, URLLC, and eMBB).
+   - Returns:
+     - A dictionary of slice counts.
+     - A dictionary of PRBs allocated to each slice.
+
+2. **`initialize_agent()` / `initialize_model()`**
+   - Creates and returns an agent or model instance loaded from a model definition file.
+   - Supports various agent/model types with pre-trained models loaded from specified paths.
+
+3. **External Imports**
+   - Models, agents, and utility functions are imported from other scripts and libraries.
+
+4. **Logging**
+   - The logging framework is extensively used for:
+     - Tracking function execution.
+     - Key information and debugging.
+     - Recording warnings or errors.
+   - Logs are automatically copied to the local machine during execution.
+
+### Control Messages
+
+The xApps support sending control messages to manage scheduling, PRB allocation, UE slice assignments, MCS settings, and power adjustments. The control message has the following structure:
+
+#### Control Message Format
+
+`<scheduling>\n<prb_assignment>\n<ue_slice_assignment>\n<mcs_adjustment>\n<power_adjustment>END`
+
+#### Breakdown of Each Line:
+
+1. **Scheduling (First Line)**  
+   Specifies the scheduling algorithm to use:
+   - `0`: Round-robin.
+   - `1`: Water filling.
+   - `2`: Proportionally fair.
+
+2. **PRB Assignment to Slices (Second Line)**  
+   Defines the PRB allocation for each slice as a bit mask.  
+   Format: `<slice_0_bits>,<slice_1_bits>,<slice_2_bits>`  
+   - The sum of PRBs bits across slices must not exceed 17.
+
+3. **UE Slice Assignment (Third Line)**  
+   Maps UEs to slices using their IMSI (International Mobile Subscriber Identity).  
+   Format: `<imsi>::<slice ID>`  
+   - Slice IDs in the example xApps:
+     - `0`: mMTC.
+     - `1`: URLLC.
+     - `2`: eMBB.
+
+4. **MCS Adjustment (Fourth Line)**  
+   Specifies the Modulation and Coding Scheme (MCS) to use:  
+   Format: `<imsi>::<MCS>`  
+   - `0`: Default adaptive modulation.
+   - `1`: QPSK.
+   - `2`: 16-QAM.
+   - `3`: 64-QAM.
+
+5. **Power (Gain) Adjustment (Fifth Line)**  
+   Adjusts transmission power:  
+   Format: `<imsi>::<gain>`  
+
+#### Example Control Message:
+`0,1,2\n3,5,9\n<imsi_1>::0\n<imsi_1>::1\n<imsi_1>::10END`
+
+Note that lines may be skipped if not needed.
+
+
+### Example xApps
 1. `run_xapp_rb_only.py` - This xApp tracks how many users are in each slice and updates the PRB allocation among slices.
 2. `run_xapp_tractor_rb.py` - In addition to PRB optimization based on the number of users in a slice, this xApp also performs traffic classification for each UE and will move the UE to the proper slice based on its current traffic pattern.
 
