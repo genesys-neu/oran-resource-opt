@@ -338,3 +338,13 @@ SUCCESS: Network connection for genesys-063 is up.
 ERROR: Network is unreachable. Network connection for genesys-065 failed.
 ERROR: Network is unreachable. Network connection for genesys-066 failed.
 SUCCESS: Network connection for genesys-070 is up.
+SUCCESS: Network connection for genesys-039 is up.
+SUCCESS: Network connection for genesys-044 is up.
+ERROR: Network is unreachable. Network connection for genesys-046 failed.
+SUCCESS: Network connection for genesys-053 is up.
+SUCCESS: Network connection for genesys-059 is up.
+SUCCESS: Network connection for genesys-063 is up.
+ERROR: Network is unreachable. Network connection for genesys-065 failed.
+ERROR: Network is unreachable. Network connection for genesys-066 failed.
+SUCCESS: Network connection for genesys-070 is up.
+SUCCESS: Network connection for genesys-071 is up.
