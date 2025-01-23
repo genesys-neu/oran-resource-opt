@@ -33,10 +33,10 @@ user_tuples[8]="1 2 5"
 user_tuples[9]="1 1 2"
 user_tuples[10]="0 1 2"
 user_tuples[11]="1 2 1"
-user_tuples[12]="2 3 4"
-user_tuples[13]="3 2 3"
-user_tuples[14]="1 2 3"
-user_tuples[15]="1 3 4"
+user_tuples[12]="1 3 5"
+user_tuples[13]="1 2 4"
+user_tuples[14]="2 3 4"
+user_tuples[15]="3 2 3"
 
 # Function to generate random slice configuration
 generate_random_slice_config() {
