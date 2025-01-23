@@ -245,8 +245,10 @@ def calculate_corrected_slice_prbs(slice_counts, slice_prb0, slice_prb1, slice_p
         if agent:
             bits_tuple = agent.policy(slice_counts[0], slice_counts[1], slice_counts[2],
                                       slice_prb0, slice_prb1, slice_prb2)
-        else:
+        elif agent_name == 'Original':
             bits_tuple = policy(slice_counts, (slice_prb0, slice_prb1, slice_prb2))
+        else:
+            bits_tuple = (3, 5, 9)
         logging.info(f'New bits_tuple: {bits_tuple}')
         return bits_tuple
 
@@ -277,7 +279,7 @@ def main():
     max_stale_steps = 60
 
     # set agent_name to specify which policy to use:
-    # round 1: 'Original'
+    # round 1: 'Original', 'Expert'
     # round 2: 'DeepQ', 'TabularQ'
     # round 3: 'TabularQ_r2_from_TabularQ', 'TabularQ_r2_from_DeepQ', 'DeepQ_r2_from_TabularQ', or 'DeepQ_r2_from_DeepQ'
     # round 4: 'TabularQ_r3' or 'DeepQ_r3' or 'Bellman_r3_TabularQ_interpol' or 'Bellman_r3_DeepQ_no_interpol'
@@ -323,6 +325,9 @@ def main():
         agent = TabularQLearningAgent(seed=42, load=True,
                                       load_path_q="utils/policies/q_table_forml2.npy")
     elif agent_name == "Original":
+        agent = ''
+
+    elif agent_name == "Expert":
         agent = ''
 
     while True:
