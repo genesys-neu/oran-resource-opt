@@ -403,6 +403,12 @@ def main():
                                                                     agent, agent_name)
 
                         # Format the control message with the new PRB assignment
+                        # expected control looks like: '1,0,0\n3,5,9\n<imsi>::<slice ID>\n<imsi>::MCS\n<imsi>::gainEND'
+                        # scheduling on the first line (0=round-robin, 1=water filling, 2=proportionally fair),
+                        # prb assignment to slice on the second line (bits in the mask, total <=17),
+                        # UE slice assignment on the third line (slice 0: mmtc, 1: urllc, 2: embb),
+                        # MCS adjustment on the fourth line (0=default adaptive modulation, 1=QPSK, 2=16 QAM, 3=64QAM),
+                        # Gain (power) adjustment on the last line
                         control_message = f'0,1,2\n{bits_tuple[0]},{bits_tuple[1]},{bits_tuple[2]}\n' \
                                           f'{updated_slice_message}\n\nEND'
                         logging.debug(f'New control message: {control_message}')
