@@ -368,13 +368,3 @@ SUCCESS: Network connection for genesys-074 is up.
 SUCCESS: Network connection for genesys-075 is up.
 ERROR: Network is unreachable. Network connection for genesys-076 failed.
 ERROR: Network is unreachable. Network connection for genesys-079 failed.
-ERROR: Network is unreachable. Network connection for genesys-066 failed.
-ERROR: Network is unreachable. Network connection for genesys-070 failed.
-ERROR: Network is unreachable. Network connection for genesys-071 failed.
-ERROR: Network is unreachable. Network connection for genesys-072 failed.
-ERROR: Network is unreachable. Network connection for genesys-074 failed.
-ERROR: Network is unreachable. Network connection for genesys-075 failed.
-ERROR: Network is unreachable. Network connection for genesys-076 failed.
-ERROR: Network is unreachable. Network connection for genesys-079 failed.
-ERROR: Network is unreachable. Network connection for genesys-086 failed.
-ERROR: Network is unreachable. Network connection for genesys-087 failed.
