@@ -76,6 +76,9 @@ def initialize_agent(agent_name):
     elif agent_name == "Bellman_r3_large_net_no_interpol":
         agent = DeepQLearningLargeAgent(seed=42, load=True,
                                         load_path_q="utils/policies/dqn_forml2_r3_large_net_Bellman_no_interpol.pth")
+    elif agent_name == "Bellman_r3_DeepQ_v2":
+        agent = DeepQLearningAgent(seed=42, load=True,
+                                   load_path_q="utils/policies/dqn_forml3_r3_Bellman.pth")
     else:
         raise ValueError("Unknown agent name provided.")
 
@@ -315,7 +318,7 @@ def main():
     control_sck = open_control_socket(4200)
     # Round 3: 'TabularQ_r2_from_TabularQ', 'TabularQ_r2_from_DeepQ', 'DeepQ_r2_from_TabularQ', or 'DeepQ_r2_from_DeepQ'
     # Round 4: 'TabularQ_r3' or 'DeepQ_r3' or 'Bellman_r3_TabularQ_interpol' or 'Bellman_r3_DeepQ_no_interpol'
-    #          or 'Bellman_r3_large_net_interpol' or 'Bellman_r3_large_net_no_interpol'
+    #          or 'Bellman_r3_large_net_interpol' or 'Bellman_r3_large_net_no_interpol' or 'Bellman_r3_DeepQ_v2'
     agent_name = "TabularQ_r3"
     agent = initialize_agent(agent_name)
     count_pkl = 0

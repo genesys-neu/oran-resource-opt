@@ -149,7 +149,7 @@ def main():
 
     # Add an argument agent_name to specify which policy to use
     parser.add_argument('--agent_name', default="TabularQ_r3",
-                        help="The policy to use, 'TabularQ_r2_from_TabularQ', 'TabularQ_r2_from_DeepQ', 'DeepQ_r2_from_TabularQ', 'DeepQ_r2_from_DeepQ', 'TabularQ_r3', 'DeepQ_r3', 'Bellman_r3_TabularQ_interpol', 'Bellman_r3_DeepQ_no_interpol', 'Bellman_r3_large_net_interpol', or 'Bellman_r3_large_net_no_interpol'")
+                        help="The policy to use, 'TabularQ_r2_from_TabularQ', 'TabularQ_r2_from_DeepQ', 'DeepQ_r2_from_TabularQ', 'DeepQ_r2_from_DeepQ', 'TabularQ_r3', 'DeepQ_r3', 'Bellman_r3_TabularQ_interpol', 'Bellman_r3_DeepQ_no_interpol', 'Bellman_r3_large_net_interpol', or 'Bellman_r3_large_net_no_interpol', or 'Bellman_r3_DeepQ_v2'")
 
     args = parser.parse_args()
 
@@ -175,6 +175,9 @@ def main():
     elif agent_name == "Bellman_r3_large_net_no_interpol":
         agent = DeepQLearningLargeAgent(seed=42, load=True,
                                         load_path_q="utils/policies/dqn_forml2_r3_large_net_Bellman_no_interpol.pth")
+    elif agent_name == "Bellman_r3_DeepQ_v2":
+        agent = DeepQLearningAgent(seed=42, load=True,
+                                   load_path_q="utils/policies/dqn_forml3_r3_Bellman.pth")
 
     while True:
         # Example usage: allocate different numbers of bits to each slice

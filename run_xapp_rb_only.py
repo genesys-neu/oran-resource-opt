@@ -283,7 +283,7 @@ def main():
     # round 2: 'DeepQ', 'TabularQ'
     # round 3: 'TabularQ_r2_from_TabularQ', 'TabularQ_r2_from_DeepQ', 'DeepQ_r2_from_TabularQ', or 'DeepQ_r2_from_DeepQ'
     # round 4: 'TabularQ_r3' or 'DeepQ_r3' or 'Bellman_r3_TabularQ_interpol' or 'Bellman_r3_DeepQ_no_interpol'
-    #          or 'Bellman_r3_large_net_interpol' or 'Bellman_r3_large_net_no_interpol'
+    #          or 'Bellman_r3_large_net_interpol' or 'Bellman_r3_large_net_no_interpol' or 'Bellman_r3_DeepQ_v2'
     agent_name = "DeepQ_r2_from_TabularQ"
 
     logging.info(f'Using {agent_name} Policy')
@@ -318,6 +318,9 @@ def main():
     elif agent_name == "Bellman_r3_large_net_no_interpol":
         agent = DeepQLearningLargeAgent(seed=42, load=True,
                                         load_path_q="utils/policies/dqn_forml2_r3_large_net_Bellman_no_interpol.pth")
+    elif agent_name == "Bellman_r3_DeepQ_v2":
+        agent = DeepQLearningAgent(seed=42, load=True,
+                                   load_path_q="utils/policies/dqn_forml3_r3_Bellman.pth")
     elif agent_name == "DeepQ":
         agent = DeepQLearningAgent(seed=42, load=True,
                                    load_path_q="utils/policies/dqn_forml2.pth")
