@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-from .utils_for_policy import map_rb_to_action, map_action_to_rb
+from .utils_for_policy import map_rb_to_action, map_action_to_rb, valid_actions, valid_actions_batch_tensor_version
 
 
 class QNetworkLarge(torch.nn.Module):
@@ -83,6 +83,8 @@ class DeepQLearningLargeAgent:
         """
         assert num_rb_mmtc + num_rb_urllc + num_rb_embb == self.total_rb, "The total number of RB of the input should be 17."
 
+        valid_actions_list = valid_actions(num_rb_mmtc, num_rb_urllc, num_rb_embb)
+
         self.dqn.eval()
         with torch.no_grad():
             state = torch.tensor([num_users_mmtc / self.max_num_users,
@@ -91,8 +93,8 @@ class DeepQLearningLargeAgent:
                                   num_rb_mmtc / self.total_rb,
                                   num_rb_urllc / self.total_rb]).float().unsqueeze(0).to(self.device)
             scores = self.dqn(state)
-        _, argmax = torch.max(scores.data, 1)
-        action = int(argmax[0])
+        _, argmax = torch.max(scores.data[:, valid_actions_list], 1)
+        action = valid_actions_list[int(argmax[0])]
         num_rb_mmtc_next, num_rb_urllc_next, num_rb_embb_next = map_action_to_rb(num_rb_mmtc, num_rb_urllc, num_rb_embb, action)
 
         assert num_rb_mmtc_next + num_rb_urllc_next + num_rb_embb_next == self.total_rb, "The total number of RB of the input should be 17."
@@ -111,7 +113,15 @@ class DeepQLearningLargeAgent:
         """
         self.dqn.train()
         current_q = self.dqn(state_batch).gather(1, action_batch.view(-1, 1).type(torch.int64))
-        next_q, _ = self.dqn_target(next_state_batch).max(dim=1)
+
+        rb_mmtc = torch.round(next_state_batch[:, 3] * 17).to(torch.int)
+        rb_urllc = torch.round(next_state_batch[:, 4] * 17).to(torch.int)
+        rb_embb = 17 - rb_mmtc - rb_urllc
+        valid_actions_mask = valid_actions_batch_tensor_version(rb_mmtc, rb_urllc, rb_embb).to(self.device)
+
+        action_values_next = self.dqn_target(next_state_batch) * valid_actions_mask
+        action_values_next[~valid_actions_mask] = -self.penalty
+        next_q, _ = action_values_next.max(dim=1)
         next_q = next_q.view(-1, 1)
 
         assert -self.penalty <= torch.max(reward_batch) <= 1, "Error! reward should not be greater than one or less than the penalty."

@@ -2,22 +2,20 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-from .utils_for_policy import map_rb_to_action, map_action_to_rb
+from .utils_for_policy import map_rb_to_action, map_action_to_rb, valid_actions, valid_actions_batch_tensor_version
 
 
-class QNetworkLarge(torch.nn.Module):
-    def __init__(self, input_dim, output_dim, hidden_dim_1, hidden_dim_2):
+class QNetwork(torch.nn.Module):
+    def __init__(self, input_dim, output_dim, hidden_dim):
         """
         Args:
             input_dim (int): state dimension.
             output_dim (int): number of actions.
-            hidden_dim_1 (int): hidden layer 1 dimension (fully connected layer)
-            hidden_dim_2 (int): hidden layer 2 dimension (fully connected layer)
+            hidden_dim (int): hidden layer dimension (fully connected layer)
         """
         super().__init__()
-        self.linear1 = nn.Linear(input_dim, hidden_dim_1)
-        self.linear2 = nn.Linear(hidden_dim_1, hidden_dim_2)
-        self.linear3 = nn.Linear(hidden_dim_2, output_dim)
+        self.linear1 = nn.Linear(input_dim, hidden_dim)
+        self.linear2 = nn.Linear(hidden_dim, output_dim)
 
     def forward(self, state):
         """
@@ -28,13 +26,12 @@ class QNetworkLarge(torch.nn.Module):
             torch.Tensor: Q values, 2-D tensor of shape (n, output_dim)
         """
         x = F.relu(self.linear1(state))
-        x = F.relu(self.linear2(x))
-        x = self.linear3(x)
+        x = self.linear2(x)
         return x
 
 
-class DeepQLearningLargeAgent:
-    def __init__(self, action_size=7, total_rb=17, max_num_users=10, penalty=0, device="cpu", seed=None, load=False, load_path_q=None):
+class DeepQLearningAgent:
+    def __init__(self, action_size=7, total_rb=17, max_num_users=10, penalty=0, seed=None, load=False, load_path_q=None):
         # problem setting
         self.action_size = action_size
         self.total_rb = total_rb
@@ -42,19 +39,18 @@ class DeepQLearningLargeAgent:
         self.penalty = penalty
         # The Q network
         if load:
-            self.dqn = QNetworkLarge(5, action_size, 128, 128).to(device)  # Q network
+            self.dqn = QNetwork(5, action_size, 256)  # Q network
             state_dict = self.load_parameters(load_path_q)
             self.dqn.load_state_dict(state_dict)
         else:
-            self.dqn = QNetworkLarge(5, action_size, 128, 128).to(device)  # Q network
-        self.dqn_target = QNetworkLarge(5, action_size, 128, 128).to(device)  # Target Q network
+            self.dqn = QNetwork(5, action_size, 256)  # Q network
+        self.dqn_target = QNetwork(5, action_size, 256)  # Target Q network
         self.dqn_target.load_state_dict(self.dqn.state_dict())
         self.loss_fn = torch.nn.MSELoss()  # loss function
         self.optim = torch.optim.Adam(self.dqn.parameters(), lr=0.01)  # optimizer for training
         self.gamma = 0.99
         self.trained_steps = 0
         self.target_update_period = 128
-        self.device = device
         if seed is None:
             self.rng = np.random.default_rng()
         else:
@@ -83,16 +79,18 @@ class DeepQLearningLargeAgent:
         """
         assert num_rb_mmtc + num_rb_urllc + num_rb_embb == self.total_rb, "The total number of RB of the input should be 17."
 
+        valid_actions_list = valid_actions(num_rb_mmtc, num_rb_urllc, num_rb_embb)
+
         self.dqn.eval()
         with torch.no_grad():
             state = torch.tensor([num_users_mmtc / self.max_num_users,
                                   num_users_urllc / self.max_num_users,
                                   num_users_embb / self.max_num_users,
                                   num_rb_mmtc / self.total_rb,
-                                  num_rb_urllc / self.total_rb]).float().unsqueeze(0).to(self.device)
+                                  num_rb_urllc / self.total_rb]).float().unsqueeze(0)
             scores = self.dqn(state)
-        _, argmax = torch.max(scores.data, 1)
-        action = int(argmax[0])
+        _, argmax = torch.max(scores.data[:, valid_actions_list], 1)
+        action = valid_actions_list[int(argmax[0])]
         num_rb_mmtc_next, num_rb_urllc_next, num_rb_embb_next = map_action_to_rb(num_rb_mmtc, num_rb_urllc, num_rb_embb, action)
 
         assert num_rb_mmtc_next + num_rb_urllc_next + num_rb_embb_next == self.total_rb, "The total number of RB of the input should be 17."
@@ -111,8 +109,24 @@ class DeepQLearningLargeAgent:
         """
         self.dqn.train()
         current_q = self.dqn(state_batch).gather(1, action_batch.view(-1, 1).type(torch.int64))
-        next_q, _ = self.dqn_target(next_state_batch).max(dim=1)
+
+        rb_mmtc = torch.round(next_state_batch[:, 3] * 17).to(torch.int)
+        rb_urllc = torch.round(next_state_batch[:, 4] * 17).to(torch.int)
+        rb_embb = 17 - rb_mmtc - rb_urllc
+        valid_actions_mask = valid_actions_batch_tensor_version(rb_mmtc, rb_urllc, rb_embb)
+
+        action_values_next = self.dqn_target(next_state_batch) * valid_actions_mask
+        action_values_next[~valid_actions_mask] = -self.penalty
+        next_q, _ = action_values_next.max(dim=1)
         next_q = next_q.view(-1, 1)
+
+        # temp
+        # state_test_1 = rows['num_mmtc_users'].iloc[0]
+        # state_test_2 = rows['num_urllc_users'].iloc[0]
+        # state_test_3 = rows['num_embb_users'].iloc[0]
+        # state_test_4 = rows['pre_rb_mmtc'].iloc[0]
+        # state_test_5 = rows['pre_rb_urllc'].iloc[0]
+        # state_test_6 = 17 - rows['pre_rb_mmtc'].iloc[0] - rows['pre_rb_urllc'].iloc[0]
 
         assert -self.penalty <= torch.max(reward_batch) <= 1, "Error! reward should not be greater than one or less than the penalty."
 

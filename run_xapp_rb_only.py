@@ -4,6 +4,7 @@ from xapp_control import *
 from utils.policies.policy_tabular_q import TabularQLearningAgent
 from utils.policies.policy_deep_q import DeepQLearningAgent
 from utils.policies.policy_deep_q_large import DeepQLearningLargeAgent
+from utils.policies.policy_deep_q_v2 import DeepQLearningAgent as DeepQLearningAgent2
 
 
 # Dictionary to store KPI history and other relevant data for each UE
@@ -319,8 +320,8 @@ def main():
         agent = DeepQLearningLargeAgent(seed=42, load=True,
                                         load_path_q="utils/policies/dqn_forml2_r3_large_net_Bellman_no_interpol.pth")
     elif agent_name == "Bellman_r3_DeepQ_v2":
-        agent = DeepQLearningAgent(seed=42, load=True,
-                                   load_path_q="utils/policies/dqn_forml3_r3_Bellman.pth")
+        agent = DeepQLearningAgent2(seed=42, load=True,
+                                    load_path_q="utils/policies/dqn_forml3_r3_Bellman.pth")
     elif agent_name == "DeepQ":
         agent = DeepQLearningAgent(seed=42, load=True,
                                    load_path_q="utils/policies/dqn_forml2.pth")

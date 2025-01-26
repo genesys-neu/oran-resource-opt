@@ -1,5 +1,5 @@
 import numpy as np
-from .utils_for_policy import map_rb_to_action, map_action_to_rb
+from .utils_for_policy import map_rb_to_action, map_action_to_rb, valid_actions
 
 
 class TabularQLearningAgent:
@@ -47,8 +47,12 @@ class TabularQLearningAgent:
         """
         assert num_rb_mmtc + num_rb_urllc + num_rb_embb == self.total_rb, "The total number of RB of the input should be 17."
 
+        valid_actions_list = valid_actions(num_rb_mmtc, num_rb_urllc, num_rb_embb)
+
         action = np.argmax(self.q_table[num_users_mmtc, num_users_urllc, num_users_embb,
-                           num_rb_mmtc - 1, num_rb_urllc - 1, :])
+                           num_rb_mmtc - 1, num_rb_urllc - 1, valid_actions_list])
+
+        action = valid_actions_list[action]
 
         num_rb_mmtc_next, num_rb_urllc_next, num_rb_embb_next = map_action_to_rb(num_rb_mmtc, num_rb_urllc, num_rb_embb,
                                                                                  action)
@@ -74,6 +78,8 @@ class TabularQLearningAgent:
             - reward: the reward received
             - next_num_mmtc_users, next_num_urllc_users, next_num_embb_users, rb_mmtc, rb_urllc, rb_embb: next state
         """
+        valid_actions_list = valid_actions(rb_mmtc, rb_urllc, rb_embb)
+
         # if cur_action != 0:
         self.q_table[num_mmtc_users,
                      num_urllc_users,
@@ -91,7 +97,8 @@ class TabularQLearningAgent:
                                                                                              next_num_urllc_users,
                                                                                              next_num_embb_users,
                                                                                              rb_mmtc - 1,
-                                                                                             rb_urllc - 1, :])))
+                                                                                             rb_urllc - 1,
+                                                                                             valid_actions_list])))
 
     def update_visit_counts(self, num_mmtc_users, num_urllc_users, num_embb_users,
                             pre_rb_mmtc, pre_rb_urllc, cur_action):
