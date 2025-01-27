@@ -5,6 +5,7 @@ from utils.policies.policy_tabular_q import TabularQLearningAgent
 from utils.policies.policy_deep_q import DeepQLearningAgent
 from utils.policies.policy_deep_q_large import DeepQLearningLargeAgent
 from utils.policies.policy_deep_q_v2 import DeepQLearningAgent as DeepQLearningAgent2
+from utils.policies.policy_deep_q_large_v2 import DeepQLearningLargeAgent as DeepQLearningLargeAgent2
 from python.ORAN_dataset import *
 from python.ORAN_models import ConvNN as global_model
 import torch
@@ -80,6 +81,9 @@ def initialize_agent(agent_name):
     elif agent_name == "Bellman_r3_DeepQ_v2":
         agent = DeepQLearningAgent2(seed=42, load=True,
                                     load_path_q="utils/policies/dqn_forml3_r3_Bellman.pth")
+    elif agent_name == "Bellman_r3_large_net_v2":
+        agent = DeepQLearningLargeAgent2(seed=42, load=True,
+                                         load_path_q="utils/policies/dqn_forml3_r3_large_net_Bellman.pth")
     else:
         raise ValueError("Unknown agent name provided.")
 
@@ -320,6 +324,7 @@ def main():
     # Round 3: 'TabularQ_r2_from_TabularQ', 'TabularQ_r2_from_DeepQ', 'DeepQ_r2_from_TabularQ', or 'DeepQ_r2_from_DeepQ'
     # Round 4: 'TabularQ_r3' or 'DeepQ_r3' or 'Bellman_r3_TabularQ_interpol' or 'Bellman_r3_DeepQ_no_interpol'
     #          or 'Bellman_r3_large_net_interpol' or 'Bellman_r3_large_net_no_interpol' or 'Bellman_r3_DeepQ_v2'
+    #          or 'Bellman_r3_large_net_v2'
     agent_name = "TabularQ_r3"
     agent = initialize_agent(agent_name)
     count_pkl = 0
