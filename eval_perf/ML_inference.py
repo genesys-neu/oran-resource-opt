@@ -15,7 +15,7 @@ def parse_log_file(file_path):
             # Extract inference times
             match_inference = re.search(r"Inference completed in ([0-9.]+) seconds", line)
             if match_inference:
-                inference_times.append(float(match_inference.group(1)))
+                inference_times.append(float(match_inference.group(1))*1000)
 
             # Extract memory usage
             match_memory = re.search(r"Total memory usage of UE data \(imsi=[0-9]+\): ([0-9]+) bytes", line)
@@ -25,27 +25,27 @@ def parse_log_file(file_path):
     return inference_times, memory_usages
 
 
-def analyze_and_plot(data, title, unit, save_dir, plot_filename):
+def analyze_and_plot(data, title, unit, save_dir, plot_filename, bins=None, decimal_places=2):
     """Analyze the data, plot a histogram, and save the plot."""
     data = np.array(data)
     stats = {
         "Metric": title,
         "Unit": unit,
-        "Min": np.min(data),
-        "Max": np.max(data),
-        "Mean": np.mean(data),
-        "Std Dev": np.std(data),
+        "Min": round(np.min(data), decimal_places),
+        "Max": round(np.max(data), decimal_places),
+        "Mean": round(np.mean(data), decimal_places),
+        "Std Dev": round(np.std(data), decimal_places),
     }
 
     # Print statistics
     print(f"{title}:")
     for key, value in stats.items():
         if key not in {"Metric", "Unit"}:
-            print(f"  {key}: {value:.2f} {unit}")
+            print(f"  {key}: {value} {unit}")
     print()
 
     # Plot histogram
-    plt.hist(data, bins=20, edgecolor='black', alpha=0.75)
+    plt.hist(data, bins=bins if bins else 10, edgecolor='black', alpha=0.75)
     plt.title(f"{title} Histogram")
     plt.xlabel(f"{title} ({unit})")
     plt.ylabel("Frequency")
@@ -67,7 +67,7 @@ def save_statistics_to_csv(statistics, save_dir, filename):
 
 
 def main():
-    root_dir = "expert_config_inference"
+    root_dir = "../expert_config_inference"
     save_dir = "analysis_results"
     os.makedirs(save_dir, exist_ok=True)  # Ensure the save directory exists
 
@@ -91,9 +91,11 @@ def main():
         stats = analyze_and_plot(
             inference_times,
             "Inference Time",
-            "seconds",
+            "milliseconds",
             save_dir,
             "inference_time_histogram.png",
+            bins=60,
+            decimal_places=4
         )
         statistics.append(stats)
     else:
@@ -107,6 +109,7 @@ def main():
             "bytes",
             save_dir,
             "memory_usage_histogram.png",
+            decimal_places=0
         )
         statistics.append(stats)
     else:
