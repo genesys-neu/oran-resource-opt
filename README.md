@@ -4,6 +4,13 @@
 This repository focuses on a rapidly deployable Open RAN framework with automated setup and experiment execution in the Colosseum testbed.
 This repository automates the setup for running traffic and interference simulations in a cellular ORAN network environment using Bash scripts. It streamlines the configuration of various network components and initiates the necessary actions to simulate network traffic and interference.
 
+> **Note**: When cloning this repository, ensure you include the submodules by running the following command:
+> ```bash
+> git clone --recurse-submodules <repository-url>
+> ```
+> This is critical as some scripts rely on transferring files from your local machine to a remote server (using `scp` or `rsync`). Without the submodules, these scripts will fail.
+
+
 You must first make a reservation in Colosseum for 2 to 12 nodes. Use the following nodes:
 - IMPACT-gNB for the gNB
 - IMPACT-UE for 1-10 UEs
