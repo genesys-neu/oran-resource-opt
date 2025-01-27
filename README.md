@@ -6,7 +6,7 @@ This repository automates the setup for running traffic and interference simulat
 
 > **Note**: When cloning this repository, ensure you include the submodules by running the following command:
 > ```bash
-> git clone --recurse-submodules <repository-url>
+> git clone --recurse-submodules <https://github.com/genesys-neu/oran-resource-opt.git>
 > ```
 > This is critical as some scripts rely on transferring files from your local machine to a remote server (using `scp` or `rsync`). Without the submodules, these scripts will fail.
 
