@@ -19,7 +19,7 @@ You must first make a reservation in Colosseum for 2 to 12 nodes. Use the follow
 ## Usage
 To run an experiment, execute the following command in the terminal:
 ```
-/run_experiment.sh config_file.txt
+./run_experiment.sh config_file.txt
 ```
 This script automates all the setup and configuration tasks, reducing the manual effort required to prepare the network environment.
 
