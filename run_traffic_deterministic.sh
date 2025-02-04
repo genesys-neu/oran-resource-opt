@@ -193,10 +193,18 @@ check_connectivity() {
     local gnb_ip="172.16.0.1"  # Replace with the actual gNB IP if different
     local log_file="connectivity_log.txt"
 
-    echo "Pinging from UE ($ue_node) to gNB ($gnb_ip)..."
+    echo "Checking connectivity from UE ($ue_node) to gNB ($gnb_ip)..."
+
+    # Try to establish an SSH connection first
+    ssh_output=$(sshpass -p 'scope' ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no $ue_node "echo SSH_SUCCESS" 2>&1)
+
+    if ! echo "$ssh_output" | grep -q "SSH_SUCCESS"; then
+        echo "ERROR: Unable to SSH into $ue_node. Connection failed." | tee -a $log_file
+        return 1
+    fi
 
     # Execute ping command and capture the output
-    ping_output=$(sshpass -p 'scope' ssh $ue_node "ping -c 4 $gnb_ip 2>&1")
+    ping_output=$(sshpass -p 'scope' ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no $ue_node "ping -c 4 $gnb_ip 2>&1")
 
     # Parse the ping results
     if echo "$ping_output" | grep -q "0 received"; then
@@ -221,6 +229,7 @@ check_connectivity() {
         return 0
     fi
 }
+
 
 ue_nodes=()
 

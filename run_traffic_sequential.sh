@@ -22,21 +22,48 @@ echo "ric is $ric"
 
 # Define arrays for user tuples
 declare -A user_tuples
-user_tuples[1]="2 3 4"
-user_tuples[2]="1 3 5"
-user_tuples[3]="1 2 5"
-user_tuples[4]="0 1 2"
-user_tuples[5]="3 2 3"
-user_tuples[6]="1 2 3"
-user_tuples[7]="1 3 4"
-user_tuples[8]="0 2 2"
-user_tuples[9]="1 1 4"
-user_tuples[10]="1 1 2"
-user_tuples[11]="1 2 1"
-user_tuples[12]="1 3 3"
-user_tuples[13]="1 2 4"
-user_tuples[14]="2 3 4"
-user_tuples[15]="1 3 5"
+user_tuples[1]="0 0 1"
+user_tuples[2]="0 0 1"
+user_tuples[3]="0 0 1"
+user_tuples[4]="0 0 1"
+user_tuples[5]="0 0 1"
+user_tuples[6]="0 0 1"
+user_tuples[7]="0 0 1"
+user_tuples[8]="0 0 1"
+user_tuples[9]="0 0 1"
+user_tuples[10]="0 0 1"
+user_tuples[11]="0 0 1"
+user_tuples[12]="0 0 1"
+user_tuples[13]="0 0 1"
+user_tuples[14]="0 0 1"
+user_tuples[15]="0 0 1"
+user_tuples[16]="0 0 1"
+user_tuples[17]="0 0 1"
+user_tuples[18]="0 0 1"
+user_tuples[19]="0 0 1"
+user_tuples[20]="0 0 1"
+user_tuples[21]="0 0 1"
+user_tuples[22]="0 0 1"
+user_tuples[23]="0 0 1"
+user_tuples[24]="0 0 1"
+user_tuples[25]="0 0 1"
+user_tuples[26]="0 0 1"
+user_tuples[27]="0 0 1"
+user_tuples[28]="0 0 1"
+user_tuples[29]="0 0 1"
+user_tuples[30]="0 0 1"
+user_tuples[31]="0 0 1"
+user_tuples[32]="0 0 1"
+user_tuples[33]="0 0 1"
+user_tuples[34]="0 0 1"
+user_tuples[35]="0 0 1"
+user_tuples[36]="0 0 1"
+user_tuples[37]="0 0 1"
+user_tuples[38]="0 0 1"
+user_tuples[39]="0 0 1"
+user_tuples[40]="0 0 1"
+user_tuples[41]="0 0 1"
+user_tuples[42]="0 0 1"
 
 
 declare -A file_index_map  # Track which file index to use for each slice type
@@ -190,10 +217,18 @@ check_connectivity() {
     local gnb_ip="172.16.0.1"  # Replace with the actual gNB IP if different
     local log_file="connectivity_log.txt"
 
-    echo "Pinging from UE ($ue_node) to gNB ($gnb_ip)..."
+    echo "Checking connectivity from UE ($ue_node) to gNB ($gnb_ip)..."
+
+    # Try to establish an SSH connection first
+    ssh_output=$(sshpass -p 'scope' ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no $ue_node "echo SSH_SUCCESS" 2>&1)
+
+    if ! echo "$ssh_output" | grep -q "SSH_SUCCESS"; then
+        echo "ERROR: Unable to SSH into $ue_node. Connection failed." | tee -a $log_file
+        return 1
+    fi
 
     # Execute ping command and capture the output
-    ping_output=$(sshpass -p 'scope' ssh $ue_node "ping -c 4 $gnb_ip 2>&1")
+    ping_output=$(sshpass -p 'scope' ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no $ue_node "ping -c 4 $gnb_ip 2>&1")
 
     # Parse the ping results
     if echo "$ping_output" | grep -q "0 received"; then
@@ -218,6 +253,7 @@ check_connectivity() {
         return 0
     fi
 }
+
 
 ue_nodes=()
 
