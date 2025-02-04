@@ -106,4 +106,4 @@ done
 "
 
 # call the traffic script
-bash ./run_traffic.sh $1
+bash ./run_traffic_sequential_e.sh $1
