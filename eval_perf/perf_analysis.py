@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
+from collections import defaultdict
 
 # Parameters for analysis
 confidence_level = 0.90  # Confidence level for convergence
@@ -8,6 +9,7 @@ threshold = 0.05         # Percentage of mean for the confidence interval (e.g.,
 
 # Path to the dataset directory
 base_dir = r"C:\Users\joshg\OneDrive - Northeastern University\IMPACT\RB_dataset"
+
 
 # Function to compute confidence interval for the mean
 def confidence_interval(data, confidence=0.90):
@@ -17,6 +19,7 @@ def confidence_interval(data, confidence=0.90):
     z_score = 1.645  # For 90% confidence interval (z = 1.645)
     h = std_err * z_score
     return mean, mean - h, mean + h
+
 
 # Function to calculate performance for a trial directory
 def perf_func(row):
@@ -69,15 +72,40 @@ def calculate_performance(trial_path):
         return None
 
     performance_list = []
+    all_timestamps = None  # to store common timestamps
 
+    # Step 1: Read all files and find common timestamps
+    data_frames = []
     for csv_file in csv_files:
         file_path = os.path.join(trial_path, csv_file)
         data = pd.read_csv(file_path)
         required_columns = ['sum_granted_prbs', 'sum_requested_prbs', 'dl_buffer [bytes]',
-                            'tx_brate downlink [Mbps]', 'slice_prb', 'slice_id']
+                            'tx_brate downlink [Mbps]', 'slice_prb', 'slice_id', 'Timestamp']
         if not all(col in data.columns for col in required_columns):
             print(f"Missing required columns in {file_path}, skipping file.")
             continue
+
+        # Store the data for later processing
+        data_frames.append((file_path, data))
+
+        # Collect all timestamps
+        if all_timestamps is None:
+            all_timestamps = set(data['Timestamp'])
+        else:
+            all_timestamps &= set(data['Timestamp'])  # intersection with existing timestamps
+
+    if not all_timestamps:
+        print(f"No common timestamps found across files in {trial_path}.")
+        return None
+
+    # Step 2: Process each file (filtering by common timestamps and calculating performance)
+    for file_path, data in data_frames:
+        # Ensure consistent slice_id by keeping the mode (most frequent value)
+        mode_slice_id = data['slice_id'].mode()[0]
+        data = data[data['slice_id'] == mode_slice_id]
+
+        # Filter rows to keep only common timestamps across all files
+        data = data[data['Timestamp'].isin(all_timestamps)]
 
         # Apply performance function and drop rows with None values
         data['performance'] = data.apply(perf_func, axis=1)
@@ -91,6 +119,7 @@ def calculate_performance(trial_path):
         print(f"No valid performance data in {trial_path}, skipping directory.")
         return None
 
+    # Calculate final average performance
     trial_avg_performance = sum(performance_list) / len(performance_list)
     print(f"Average performance for {trial_path}: {trial_avg_performance:.4f}")
     return trial_avg_performance
@@ -142,17 +171,24 @@ for method, user_data in data.items():
                 "Method": method,
                 "User Combination": user_combination,
                 "Trials": n_trials,
-                "Mean": np.nan,
-                "Median": np.nan,
+                "Mean": metrics[0],
+                "Median": metrics[0],
                 "CI Width": np.nan,
                 "Sufficient": False,
-                "Additional Trials Needed": np.nan
+                "Additional Trials Needed": np.nan,
+                "Std Dev": np.nan,
+                "CV": np.nan,
+                "Weighted Score": metrics[0] * 0.5
             })
             continue
 
         mean, lower_ci, upper_ci = confidence_interval(metrics, confidence=confidence_level)
         interval_width = upper_ci - lower_ci
         median = np.median(metrics)
+
+        # Calculate standard deviation and CV
+        std_dev = np.std(metrics, ddof=1)
+        cv = std_dev / mean if mean != 0 else np.nan  # Avoid division by zero
 
         if mean == 0 or np.isnan(mean) or np.isnan(interval_width):
             print(f"Invalid metrics for {method} - {user_combination}, skipping additional trial computation.")
@@ -164,7 +200,10 @@ for method, user_data in data.items():
                 "Median": median,
                 "CI Width": interval_width,
                 "Sufficient": False,
-                "Additional Trials Needed": np.nan
+                "Additional Trials Needed": np.nan,
+                "Std Dev": std_dev,
+                "CV": cv,
+                "Weighted Score": mean * 0.5
             })
             continue
 
@@ -188,7 +227,10 @@ for method, user_data in data.items():
             "Median": median,
             "CI Width": interval_width,
             "Sufficient": is_sufficient,
-            "Additional Trials Needed": additional_trials_needed
+            "Additional Trials Needed": additional_trials_needed,
+            "Std Dev": std_dev,
+            "CV": cv,
+            "Weighted Score": mean / (1 + cv)
         })
 
 # Create a DataFrame for results
@@ -198,22 +240,23 @@ df_results.to_csv(output_path, index=False)
 print(f"Analysis results saved to: {output_path}")
 
 # Define the specific user combinations to include in the analysis
-valid_user_combinations = [
-    "_0_1_2", "_0_2_2", "_1_1_2", "_1_1_4", "_1_2_1",
-    "_1_2_3", "_1_2_5", "_1_3_4", "_1_3_5", "_2_3_4", "_3_2_3"
-]
+# valid_user_combinations = [
+#     "_0_1_2", "_0_2_2", "_1_1_2", "_1_1_4", "_1_2_1",
+#     "_1_2_3", "_1_2_5", "_1_3_4", "_1_3_5", "_2_3_4", "_3_2_3"
+# ]
 
 # Filter for user consistency analysis
 user_consistency_data = []
 
 # Aggregate metrics for each user combination across all methods
-user_metrics_aggregated = {user_comb: [] for user_comb in valid_user_combinations}
+# user_metrics_aggregated = {user_comb: [] for user_comb in valid_user_combinations}
+# Use defaultdict to automatically handle missing keys
+user_metrics_aggregated = defaultdict(list)
 
 # Populate the aggregated data
 for method, user_data in data.items():
     for user_combination, metrics in user_data.items():
-        if user_combination in valid_user_combinations:  # Filter by valid combinations
-            user_metrics_aggregated[user_combination].extend(metrics)
+        user_metrics_aggregated[user_combination].extend(metrics)
 
 # Calculate mean, median, and CV for each user combination
 for user_combination, all_metrics in user_metrics_aggregated.items():
@@ -245,8 +288,7 @@ method_consistency_data = []
 for method, user_data in data.items():
     all_metrics = []
     for user_combination, metrics in user_data.items():
-        if user_combination in valid_user_combinations:  # Filter by valid combinations
-            all_metrics.extend(metrics)
+        all_metrics.extend(metrics)
     if all_metrics:
         n_trials = len(all_metrics)
         mean = np.mean(all_metrics)
