@@ -42,11 +42,15 @@ with open(user_comb_output_path, "w") as f:
         for user_comb in user_combs:
             f.write(f"{max_missing},{user_comb}\n")
 
-# Compute both weighted and mean scores, along with raw data storage
+# Initialize storage for raw data
 results_mean = {}
 results_weighted = {}
 raw_mean_data = {}
 raw_weighted_data = {}
+raw_weighted_filtered = {}
+
+# Filtering threshold for coefficient of variation (CV)
+cv_threshold = 0.5
 
 for max_missing in range(len(methods)):
     included_users = set()
@@ -67,6 +71,10 @@ for max_missing in range(len(methods)):
     raw_mean_data[max_missing] = df_filtered.pivot(index="User Combination", columns="Method", values="Mean")
     raw_weighted_data[max_missing] = df_filtered.pivot(index="User Combination", columns="Method", values="Weighted Score")
 
+    # Filter out weighted scores where CV is missing or exceeds the threshold
+    df_filtered_valid_cv = df_filtered[(df_filtered["CV"].notna()) & (df_filtered["CV"] <= cv_threshold)]
+    raw_weighted_filtered[max_missing] = df_filtered_valid_cv.pivot(index="User Combination", columns="Method", values="Weighted Score")
+
 # Convert results to DataFrames and sort columns
 results_mean_df = pd.DataFrame.from_dict(results_mean, orient="index").reindex(columns=method_order, fill_value=float("nan"))
 results_weighted_df = pd.DataFrame.from_dict(results_weighted, orient="index").reindex(columns=method_order, fill_value=float("nan"))
@@ -80,6 +88,7 @@ mean_output_path = "RB_method_avg_means.csv"
 weighted_output_path = "RB_method_avg_weighted_scores.csv"
 raw_mean_output_path = "RB_raw_mean_data.csv"
 raw_weighted_output_path = "RB_raw_weighted_data.csv"
+raw_weighted_filtered_output_path = "RB_raw_weighted_filtered.csv"
 
 results_mean_df.to_csv(mean_output_path)
 results_weighted_df.to_csv(weighted_output_path)
@@ -87,12 +96,15 @@ results_weighted_df.to_csv(weighted_output_path)
 # Concatenate all raw data across max_missing values
 raw_mean_df = pd.concat(raw_mean_data, names=["Max Missing Methods"]).reindex(columns=method_order, fill_value=float("nan"))
 raw_weighted_df = pd.concat(raw_weighted_data, names=["Max Missing Methods"]).reindex(columns=method_order, fill_value=float("nan"))
+raw_weighted_filtered_df = pd.concat(raw_weighted_filtered, names=["Max Missing Methods"]).reindex(columns=method_order, fill_value=float("nan"))
 
 raw_mean_df.to_csv(raw_mean_output_path)
 raw_weighted_df.to_csv(raw_weighted_output_path)
+raw_weighted_filtered_df.to_csv(raw_weighted_filtered_output_path)
 
 print(f"Mean analysis saved to: {mean_output_path}")
 print(f"Weighted score analysis saved to: {weighted_output_path}")
 print(f"Raw mean data saved to: {raw_mean_output_path}")
 print(f"Raw weighted data saved to: {raw_weighted_output_path}")
+print(f"Filtered raw weighted data saved to: {raw_weighted_filtered_output_path}")
 print(f"User combinations saved to: {user_comb_output_path}")
