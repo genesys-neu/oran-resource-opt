@@ -1,0 +1,12 @@
+KPI,Min Size,Mean Size,Max Size,Std Dev
+Timestamp,13,13,13,0
+num_ues,1,1,1,0
+IMSI,13,13,13,0
+RNTI,3,3,3,0
+slicing_enabled,1,1,1,0
+slice_id,1,1,1,0
+slice_prb,1,1,1,0
+power_multiplier,1,1,1,0
+scheduling_policy,1,1,1,0
+,,,,
+,,,35,
