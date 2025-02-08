@@ -6,6 +6,7 @@ from utils.policies.policy_deep_q import DeepQLearningAgent
 from utils.policies.policy_deep_q_large import DeepQLearningLargeAgent
 from utils.policies.policy_deep_q_v2 import DeepQLearningAgent as DeepQLearningAgent2
 from utils.policies.policy_deep_q_large_v2 import DeepQLearningLargeAgent as DeepQLearningLargeAgent2
+from utils.policies.policy_tabular_q_v2 import TabularQLearningAgent as TabularQLearningAgent2
 
 
 # Dictionary to store KPI history and other relevant data for each UE
@@ -286,7 +287,7 @@ def main():
     # round 3: 'TabularQ_r2_from_TabularQ', 'TabularQ_r2_from_DeepQ', 'DeepQ_r2_from_TabularQ', or 'DeepQ_r2_from_DeepQ'
     # round 4: 'TabularQ_r3' or 'DeepQ_r3' or 'Bellman_r3_TabularQ_interpol' or 'Bellman_r3_DeepQ_no_interpol'
     #          or 'Bellman_r3_large_net_interpol' or 'Bellman_r3_large_net_no_interpol' or 'Bellman_r3_DeepQ_v2'
-    #          or 'Bellman_r3_large_net_v2'
+    #          or 'Bellman_r3_large_net_v2' or 'Bellman_r3_TabularQ_v2'
     agent_name = "Expert"
 
     logging.info(f'Using {agent_name} Policy')
@@ -327,6 +328,9 @@ def main():
     elif agent_name == "Bellman_r3_large_net_v2":
         agent = DeepQLearningLargeAgent2(seed=42, load=True,
                                          load_path_q="utils/policies/dqn_forml3_r3_large_net_Bellman.pth")
+    elif agent_name == "Bellman_r3_TabularQ_v2":
+        agent = TabularQLearningAgent2(seed=42, load=True,
+                                       load_path_q="utils/policies/q_table_forml3_r3_Bellman.npy")
     elif agent_name == "DeepQ":
         agent = DeepQLearningAgent(seed=42, load=True,
                                    load_path_q="utils/policies/dqn_forml2.pth")
