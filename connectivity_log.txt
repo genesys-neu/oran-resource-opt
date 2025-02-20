@@ -558,3 +558,53 @@ SUCCESS: Network connection for genesys-074 is up.
 SUCCESS: Network connection for genesys-075 is up.
 ERROR: Network is unreachable. Network connection for genesys-076 failed.
 ERROR: Network is unreachable. Network connection for genesys-079 failed.
+ERROR: Network is unreachable. Network connection for genesys-021 failed.
+ERROR: Network is unreachable. Network connection for genesys-022 failed.
+ERROR: Network is unreachable. Network connection for genesys-023 failed.
+ERROR: Network is unreachable. Network connection for genesys-025 failed.
+ERROR: Network is unreachable. Network connection for genesys-026 failed.
+ERROR: Network is unreachable. Network connection for genesys-066 failed.
+ERROR: Network is unreachable. Network connection for genesys-070 failed.
+ERROR: Network is unreachable. Network connection for genesys-071 failed.
+ERROR: Network is unreachable. Network connection for genesys-103 failed.
+ERROR: Network is unreachable. Network connection for genesys-114 failed.
+SUCCESS: Network connection for genesys-083 is up.
+SUCCESS: Network connection for genesys-087 is up.
+SUCCESS: Network connection for genesys-091 is up.
+SUCCESS: Network connection for genesys-092 is up.
+ERROR: Network is unreachable. Network connection for genesys-098 failed.
+SUCCESS: Network connection for genesys-099 is up.
+SUCCESS: Network connection for genesys-100 is up.
+SUCCESS: Network connection for genesys-101 is up.
+SUCCESS: Network connection for genesys-103 is up.
+SUCCESS: Network connection for genesys-114 is up.
+SUCCESS: Network connection for genesys-003 is up.
+SUCCESS: Network connection for genesys-004 is up.
+SUCCESS: Network connection for genesys-007 is up.
+SUCCESS: Network connection for genesys-017 is up.
+SUCCESS: Network connection for genesys-019 is up.
+ERROR: Unable to SSH into genesys-020. Connection failed.
+SUCCESS: Network connection for genesys-021 is up.
+SUCCESS: Network connection for genesys-022 is up.
+SUCCESS: Network connection for genesys-023 is up.
+SUCCESS: Network connection for genesys-025 is up.
+SUCCESS: Network connection for genesys-039 is up.
+SUCCESS: Network connection for genesys-044 is up.
+SUCCESS: Network connection for genesys-063 is up.
+ERROR: Network is unreachable. Network connection for genesys-065 failed.
+ERROR: Network is unreachable. Network connection for genesys-066 failed.
+SUCCESS: Network connection for genesys-070 is up.
+SUCCESS: Network connection for genesys-071 is up.
+SUCCESS: Network connection for genesys-072 is up.
+SUCCESS: Network connection for genesys-074 is up.
+SUCCESS: Network connection for genesys-075 is up.
+SUCCESS: Network connection for genesys-003 is up.
+SUCCESS: Network connection for genesys-046 is up.
+SUCCESS: Network connection for genesys-053 is up.
+SUCCESS: Network connection for genesys-056 is up.
+SUCCESS: Network connection for genesys-059 is up.
+SUCCESS: Network connection for genesys-077 is up.
+SUCCESS: Network connection for genesys-083 is up.
+SUCCESS: Network connection for genesys-087 is up.
+SUCCESS: Network connection for genesys-091 is up.
+SUCCESS: Network connection for genesys-092 is up.

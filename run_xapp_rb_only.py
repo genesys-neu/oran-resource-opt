@@ -288,7 +288,7 @@ def main():
     # round 4: 'TabularQ_r3' or 'DeepQ_r3' or 'Bellman_r3_TabularQ_interpol' or 'Bellman_r3_DeepQ_no_interpol'
     #          or 'Bellman_r3_large_net_interpol' or 'Bellman_r3_large_net_no_interpol' or 'Bellman_r3_DeepQ_v2'
     #          or 'Bellman_r3_large_net_v2' or 'Bellman_r3_TabularQ_v2'
-    agent_name = "Expert"
+    agent_name = "Bellman_r3_TabularQ_v2"
 
     logging.info(f'Using {agent_name} Policy')
 
