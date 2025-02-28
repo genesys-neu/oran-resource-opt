@@ -50,7 +50,7 @@ done
 
 echo "Setting up the near-RT RIC"
 # TODO: Update the line below with the correct xapp python file
-sshpass -p "ChangeMe" scp run_xapp_rb_only.py $ric:/root/TRACTOR/run_xapp_IMPACT.py
+sshpass -p "ChangeMe" scp run_xapp_multi_obj.py $ric:/root/TRACTOR/run_xapp_IMPACT.py
 sshpass -p "ChangeMe" rsync -avz ./utils/ $ric:/root/TRACTOR/utils/
 sshpass -p "ChangeMe" rsync -avz ./model/ $ric:/root/TRACTOR/model/
 
