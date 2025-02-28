@@ -1,16 +1,7 @@
 import logging
 import numpy as np
 from xapp_control import *
-from utils.policies.policy_tabular_q import TabularQLearningAgent
-from utils.policies.policy_deep_q import DeepQLearningAgent
-from utils.policies.policy_deep_q_large import DeepQLearningLargeAgent
-from utils.policies.policy_deep_q_v2 import DeepQLearningAgent as DeepQLearningAgent2
-from utils.policies.policy_deep_q_large_v2 import DeepQLearningLargeAgent as DeepQLearningLargeAgent2
-from utils.policies.policy_tabular_q_v2 import TabularQLearningAgent as TabularQLearningAgent2
 from python.ORAN_dataset import *
-from python.ORAN_models import ConvNN as global_model
-import torch
-import pickle
 
 
 # Dictionary to store KPI history and other relevant data for each UE
@@ -24,6 +15,9 @@ def initialize_ue_data(imsi):
         'kpi_slice': 0,
         'kpi_prb': 1,
         'stale_counter': 0,
+        'schedule': 0,
+        'mcs': 0,
+        'power': 20,
         'inference_kpi': [],
     }
 
@@ -38,6 +32,7 @@ def count_ue_assignments():
     """Count the number of UEs assigned to each slice and return the PRBs for each slice."""
     slice_count = {0: 0, 1: 0, 2: 0}
     slice_prbs = {0: 0, 1: 0, 2: 0}
+    slice_schedule = {0: 0, 1: 0, 2: 0}
 
     for ue in ue_data.values():
         assigned_slice = ue['kpi_slice']
@@ -46,8 +41,9 @@ def count_ue_assignments():
             # Only update PRBs if this is the first UE in the slice
             if slice_count[assigned_slice] == 1:
                 slice_prbs[assigned_slice] = ue['kpi_prb']
+                slice_schedule[assigned_slice] = ue['schedule']
 
-    return slice_count, slice_prbs
+    return slice_count, slice_prbs, slice_schedule
 
 
 def initialize_agent(agent_name):
@@ -61,8 +57,100 @@ def initialize_agent(agent_name):
         raise ValueError("Unknown agent name provided.")
 
 
+def policy(user_tuple, rb_tuple):
+    """
+    This function returns a RB configuration for the next step given the current RB configuration.
+        Args:
+            user_tuple: (num_users_mmtc, num_users_urllc, num_users_embb)
+            rb_tuple: (num_rb_mmtc, num_rb_urllc, num_rb_embb)
+        Returns:
+            num_rb_mmtc_next: the number of RBs for mmtc in the next step
+            num_rb_urllc_next: the number of RBs for urllc in the next step
+            num_rb_embb_next: the number of RBs for embb in the next step
+    """
+
+    num_users_mmtc, num_users_urllc, num_users_embb = user_tuple
+    num_rb_mmtc, num_rb_urllc, num_rb_embb = rb_tuple
+
+    total_rb = 17
+
+    # Ensure at least 1 RB in each slice
+    if num_rb_mmtc == 0:
+        num_rb_mmtc = 1
+    if num_rb_urllc == 0:
+        num_rb_urllc = 1
+    if num_rb_embb == 0:
+        num_rb_embb = 1
+
+    # Calculate the number of RBs that need to be added or removed
+    used_rb = num_rb_mmtc + num_rb_urllc + num_rb_embb
+    rb_to_add = total_rb - used_rb
+
+    # Initialize next RB counts
+    num_rb_mmtc_next = num_rb_mmtc
+    num_rb_urllc_next = num_rb_urllc
+    num_rb_embb_next = num_rb_embb
+
+    if rb_to_add == 0:
+        # Random change of RB configuration
+        action = np.random.choice(7)
+        # print(action)
+        """
+        0: keep the current RB configuration
+        1: mmtc -> urllc
+        2: mmtc -> embb
+        3: urllc -> mmtc
+        4: urllc -> embb
+        5: embb -> mmtc
+        6: embb -> urllc
+        """
+        if action == 1:
+            if num_rb_mmtc >= 2:
+                num_rb_mmtc_next = num_rb_mmtc - 1
+                num_rb_urllc_next = num_rb_urllc + 1
+                num_rb_embb_next = num_rb_embb
+        elif action == 2:
+            if num_rb_mmtc >= 2:
+                num_rb_mmtc_next = num_rb_mmtc - 1
+                num_rb_urllc_next = num_rb_urllc
+                num_rb_embb_next = num_rb_embb + 1
+        elif action == 3:
+            if num_rb_urllc >= 2:
+                num_rb_mmtc_next = num_rb_mmtc + 1
+                num_rb_urllc_next = num_rb_urllc - 1
+                num_rb_embb_next = num_rb_embb
+        elif action == 4:
+            if num_rb_urllc >= 2:
+                num_rb_mmtc_next = num_rb_mmtc
+                num_rb_urllc_next = num_rb_urllc - 1
+                num_rb_embb_next = num_rb_embb + 1
+        elif action == 5:
+            if num_rb_embb >= 2:
+                num_rb_mmtc_next = num_rb_mmtc + 1
+                num_rb_urllc_next = num_rb_urllc
+                num_rb_embb_next = num_rb_embb - 1
+        elif action == 6:
+            if num_rb_embb >= 2:
+                num_rb_mmtc_next = num_rb_mmtc
+                num_rb_urllc_next = num_rb_urllc + 1
+                num_rb_embb_next = num_rb_embb - 1
+    else:
+        # Add 1 RB to slices with users
+        if num_users_urllc > 0 and rb_to_add > 0:
+            num_rb_urllc_next += 1
+            rb_to_add -= 1
+        if num_users_embb > 0 and rb_to_add > 0:
+            num_rb_embb_next += 1
+            rb_to_add -= 1
+        if num_users_mmtc > 0 and rb_to_add > 0:
+            num_rb_mmtc_next += 1
+            rb_to_add -= 1
+
+    return num_rb_mmtc_next, num_rb_urllc_next, num_rb_embb_next
+
+
 def setup_logging():
-    logging.basicConfig(level=logging.INFO, filename='/home/xapp-logger.log', filemode='a+',
+    logging.basicConfig(level=logging.DEBUG, filename='/home/xapp-logger.log', filemode='a+',
                         format='%(asctime)-15s %(levelname)-8s %(message)s')
     formatter = logging.Formatter('%(asctime)-15s %(levelname)-8s %(message)s')
     console = logging.StreamHandler()
@@ -83,7 +171,33 @@ def process_line(line):
     return kpi_new, imsi
 
 
-def calculate_corrected_slice_prbs(slice_counts, slice_prb0, slice_prb1, slice_prb2, agent, agent_name):
+def update_schedule_conf(slice_schedule):
+    """Randomly update the schedule policy for each slice with cyclic wrap-around."""
+    for slice_id in slice_schedule:
+        change = np.random.choice([-1, 0, 1])  # Decrease, leave as is, or increase
+        new_schedule = (slice_schedule[slice_id] + change) % 3  # Wrap around 0,1,2
+
+        slice_schedule[slice_id] = new_schedule
+
+    return slice_schedule
+
+
+def update_mcs_conf(ue_mcs):
+    """Randomly update the MCS configuration with cyclic wrap-around for values 0-3."""
+    change = np.random.choice([-1, 0, 1])  # Decrease, leave as is, or increase
+    new_mcs = (ue_mcs + change) % 4  # Wrap around 0,1,2,3
+
+    return new_mcs
+
+
+def update_power_conf(ue_power):
+    """Randomly select a new power level from 0 to 60 dB in 5 dB steps."""
+    new_power = np.random.choice(np.arange(0, 65, 5))  # Picks from [0, 5, 10, ..., 60]
+
+    return new_power
+
+
+def update_prb_conf(slice_counts, slice_prb0, slice_prb1, slice_prb2, agent, agent_name):
     zero_count = list(slice_counts.values()).count(0)
 
     if zero_count == 1:
@@ -178,7 +292,7 @@ def calculate_corrected_slice_prbs(slice_counts, slice_prb0, slice_prb1, slice_p
             bits_tuple = agent.policy(slice_counts[0], slice_counts[1], slice_counts[2],
                                       slice_prb0, slice_prb1, slice_prb2)
         elif agent_name == 'Original':
-            bits_tuple = policy(slice_counts, (slice_prb0, slice_prb1, slice_prb2))
+            bits_tuple, schedule_tuple = policy(slice_counts, (slice_prb0, slice_prb1, slice_prb2))
         else:
             bits_tuple = (3, 5, 9)
         logging.info(f'New bits_tuple: {bits_tuple}')
@@ -234,19 +348,17 @@ def main():
     setup_logging()
 
     control_sck = open_control_socket(4200)
-    # Round 3: 'TabularQ_r2_from_TabularQ', 'TabularQ_r2_from_DeepQ', 'DeepQ_r2_from_TabularQ', or 'DeepQ_r2_from_DeepQ'
-    # Round 4: 'TabularQ_r3' or 'DeepQ_r3' or 'Bellman_r3_TabularQ_interpol' or 'Bellman_r3_DeepQ_no_interpol'
-    #          or 'Bellman_r3_large_net_interpol' or 'Bellman_r3_large_net_no_interpol' or 'Bellman_r3_DeepQ_v2'
-    #          or 'Bellman_r3_large_net_v2' or 'Bellman_r3_TabularQ_v2'
-    agent_name = "TabularQ_r3"
+    # Round 1: 'Expert' or 'Original
+
+    agent_name = "Original"
     agent = initialize_agent(agent_name)
     count_pkl = 0
     max_stale_steps = 60
     slice_len, Nclass, num_feats = 32, 4, 17
-    torch_model_path = 'model/CNN/model_weights__slice32.pt'
-    norm_param_path = 'model/CNN/cols_maxmin.pkl'
-    colsparam_dict = pickle.load(open(norm_param_path, 'rb'))
-    model, device = initialize_model(Nclass, slice_len, num_feats, torch_model_path)
+    # torch_model_path = 'model/CNN/model_weights__slice32.pt'
+    # norm_param_path = 'model/CNN/cols_maxmin.pkl'
+    # colsparam_dict = pickle.load(open(norm_param_path, 'rb'))
+    # model, device = initialize_model(Nclass, slice_len, num_feats, torch_model_path)
 
     print('Start listening on E2 interface...')
     logging.info('Finished initialization')
@@ -290,6 +402,7 @@ def main():
                     ue['kpi_slice'] = int(kpi_new[5])
                     ue['kpi_prb'] = int(kpi_new[6])
                     ue['last_timestamp'] = curr_timestamp
+                    ue['schedule'] = int(kpi_new[8])
                     ue['stale_counter'] = 0
                     # Next we must update the inference_kpi list
                     ue['inference_kpi'].append(kpi_new[np.array(
@@ -301,13 +414,10 @@ def main():
                         ue['inference_kpi'].pop(0)
                         logging.debug(f'Removing first entry in list, length is now {len(ue["inference_kpi"])}')
 
-                    if len(ue['inference_kpi']) == slice_len:
-                        updated_slice_message = classify_traffic(ue, imsi, model, colsparam_dict, current_slice, device)
-                    else:
-                        updated_slice_message = f'00{imsi}::{current_slice}'
+                    updated_slice_message = f'00{imsi}::{current_slice}'
 
                     # After updating ue_data, count UEs assigned to each slice and get PRBs
-                    slice_counts, slice_prbs = count_ue_assignments()
+                    slice_counts, slice_prbs, slice_schedule = count_ue_assignments()
                     logging.debug(f'Slice 0: {slice_counts[0]} UEs, PRBs: {slice_prbs[0]}, '
                                   f'Slice 1: {slice_counts[1]} UEs, PRBs: {slice_prbs[1]}, '
                                   f'Slice 2: {slice_counts[2]} UEs, PRBs: {slice_prbs[2]}')
@@ -316,23 +426,32 @@ def main():
                     slice_prb0 = slice_prbs[0] // 3
                     slice_prb1 = slice_prbs[1] // 3
                     slice_prb2 = (slice_prbs[2] // 3) + (1 if slice_prbs[2] % 3 > 0 else 0)
-                    # logging.debug(f'Slice 0: {slice_counts[0]} UEs, PRB bits: {slice_prb0}, '
-                    #              f'Slice 1: {slice_counts[1]} UEs, PRB bits: {slice_prb1}, '
-                    #              f'Slice 2: {slice_counts[2]} UEs, PRB bits: {slice_prb2}')
+                    logging.debug(f'Slice 0: {slice_counts[0]} UEs, PRB bits: {slice_prb0}, '
+                                  f'Slice 1: {slice_counts[1]} UEs, PRB bits: {slice_prb1}, '
+                                  f'Slice 2: {slice_counts[2]} UEs, PRB bits: {slice_prb2}')
 
                     if count_pkl > 15:
-                        bits_tuple = calculate_corrected_slice_prbs(slice_counts, slice_prb0, slice_prb1, slice_prb2,
+
+                        bits_tuple = update_prb_conf(slice_counts, slice_prb0, slice_prb1, slice_prb2,
                                                                     agent, agent_name)
+                        schedule_tuple = update_schedule_conf(slice_schedule)
+                        new_mcs = update_mcs_conf(ue['mcs'])
+                        ue['mcs'] = new_mcs
+                        new_power = update_power_conf(ue['power'])
+                        ue['power'] = new_power
 
                         # Format the control message with the new PRB assignment
                         # expected control looks like: '1,0,0\n3,5,9\n<imsi>::<slice ID>\n<imsi>::MCS\n<imsi>::gainEND'
                         # scheduling on the first line (0=round-robin, 1=water filling, 2=proportionally fair),
                         # prb assignment to slice on the second line (bits in the mask, total <=17),
                         # UE slice assignment on the third line (slice 0: mmtc, 1: urllc, 2: embb),
-                        # MCS adjustment on the fourth line (0=default adaptive modulation, 1=QPSK, 2=16 QAM, 3=64QAM),
+                        # MCS adjustment on the fourth line (0=default adaptive modulation, 1=QPSK, 2=16QAM, 3=64QAM),
                         # Gain (power) adjustment on the last line
-                        control_message = f'0,1,2\n{bits_tuple[0]},{bits_tuple[1]},{bits_tuple[2]}\n' \
-                                          f'{updated_slice_message}\n\nEND'
+                        control_message = f'{schedule_tuple[0]},{schedule_tuple[1]},{schedule_tuple[2]}\n' \
+                                          f'{bits_tuple[0]},{bits_tuple[1]},{bits_tuple[2]}\n' \
+                                          f'{updated_slice_message}\n' \
+                                          f'00{imsi}::{new_mcs}\n' \
+                                          f'00{imsi}::{new_power}END'
                         logging.debug(f'New control message: {control_message}')
 
                         # Send the control message via the socket
