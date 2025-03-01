@@ -150,7 +150,7 @@ def policy(user_tuple, rb_tuple):
 
 
 def setup_logging():
-    logging.basicConfig(level=logging.DEBUG, filename='/home/xapp-logger.log', filemode='a+',
+    logging.basicConfig(level=logging.INFO, filename='/home/xapp-logger.log', filemode='a+',
                         format='%(asctime)-15s %(levelname)-8s %(message)s')
     formatter = logging.Formatter('%(asctime)-15s %(levelname)-8s %(message)s')
     console = logging.StreamHandler()
@@ -292,7 +292,7 @@ def update_prb_conf(slice_counts, slice_prb0, slice_prb1, slice_prb2, agent, age
             bits_tuple = agent.policy(slice_counts[0], slice_counts[1], slice_counts[2],
                                       slice_prb0, slice_prb1, slice_prb2)
         elif agent_name == 'Original':
-            bits_tuple, schedule_tuple = policy(slice_counts, (slice_prb0, slice_prb1, slice_prb2))
+            bits_tuple = policy(slice_counts, (slice_prb0, slice_prb1, slice_prb2))
         else:
             bits_tuple = (3, 5, 9)
         logging.info(f'New bits_tuple: {bits_tuple}')
