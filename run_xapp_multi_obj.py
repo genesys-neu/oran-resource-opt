@@ -1,4 +1,5 @@
 import logging
+import time
 import numpy as np
 from xapp_control import *
 from python.ORAN_dataset import *
@@ -17,7 +18,6 @@ def initialize_ue_data(imsi):
         'stale_counter': 0,
         'schedule': 0,
         'mcs': 0,
-        'power': 20,
         'inference_kpi': [],
     }
 
@@ -190,7 +190,7 @@ def update_mcs_conf(ue_mcs):
     return new_mcs
 
 
-def update_power_conf(ue_power):
+def update_power_conf(dl_power):
     """Randomly select a new power level from 0 to 60 dB in 5 dB steps."""
     new_power = np.random.choice(np.arange(0, 65, 5))  # Picks from [0, 5, 10, ..., 60]
 
@@ -355,6 +355,8 @@ def main():
     count_pkl = 0
     max_stale_steps = 60
     slice_len, Nclass, num_feats = 32, 4, 17
+    dl_power = 20
+    dl_update_time = 250
     # torch_model_path = 'model/CNN/model_weights__slice32.pt'
     # norm_param_path = 'model/CNN/cols_maxmin.pkl'
     # colsparam_dict = pickle.load(open(norm_param_path, 'rb'))
@@ -362,6 +364,7 @@ def main():
 
     print('Start listening on E2 interface...')
     logging.info('Finished initialization')
+    start_time = time.perf_counter()
 
     while True:
         data_sck = receive_from_socket(control_sck)
@@ -373,6 +376,7 @@ def main():
                 logging.warning('ERROR, negative value for socket - terminating')
                 break
         else:
+
             # logging.debug('Received data: ' + repr(data_sck))
             # with open('/home/kpi_new_log.txt', 'a') as f:
             #     f.write('{}\n'.format(data_sck))
@@ -437,8 +441,10 @@ def main():
                         schedule_tuple = update_schedule_conf(slice_schedule)
                         new_mcs = update_mcs_conf(ue['mcs'])
                         ue['mcs'] = new_mcs
-                        new_power = update_power_conf(ue['power'])
-                        ue['power'] = new_power
+                        if 1000*(time.perf_counter() - start_time) > 250:
+                            dl_power = update_power_conf(dl_power)
+                            start_time = time.perf_counter()
+                            logging.info(f'Updating power to {dl_power}')
 
                         # Format the control message with the new PRB assignment
                         # expected control looks like: '1,0,0\n3,5,9\n<imsi>::<slice ID>\n<imsi>::MCS\n<imsi>::gainEND'
@@ -451,7 +457,7 @@ def main():
                                           f'{bits_tuple[0]},{bits_tuple[1]},{bits_tuple[2]}\n' \
                                           f'{updated_slice_message}\n' \
                                           f'00{imsi}::{new_mcs}\n' \
-                                          f'00{imsi}::{new_power}END'
+                                          f'00{imsi}::{dl_power}END'
                         logging.debug(f'New control message: {control_message}')
 
                         # Send the control message via the socket
