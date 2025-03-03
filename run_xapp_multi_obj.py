@@ -183,10 +183,19 @@ def update_schedule_conf(slice_schedule):
 
 
 def update_mcs_conf(ue_mcs):
-    """Randomly update the MCS configuration with cyclic wrap-around for values 0-3."""
-    change = np.random.choice([-1, 0, 1])  # Decrease, leave as is, or increase
-    new_mcs = (ue_mcs + change) % 4  # Wrap around 0,1,2,3
-
+    """Update the MCS configuration without wrap-around. Special handling for 0 (automatic)."""
+    if ue_mcs == 0:
+        # If automatic, either stay automatic or switch to one of the fixed MCS values (1, 2, or 3)
+        new_mcs = np.random.choice([0, 1, 2, 3])
+    elif ue_mcs == 1:
+        # If QPSK (1), options: stay, increase to 16QAM (2), switch to automatic (0)
+        new_mcs = np.random.choice([1, 2, 0])
+    elif ue_mcs == 2:
+        # If 16QAM (2), options: stay, increase to 64QAM (3), decrease to QPSK (1), switch to automatic (0)
+        new_mcs = np.random.choice([2, 3, 1, 0])
+    elif ue_mcs == 3:
+        # If 64QAM (3), options: stay, decrease to 16QAM (2), switch to automatic (0)
+        new_mcs = np.random.choice([3, 2, 0])
     return new_mcs
 
 
