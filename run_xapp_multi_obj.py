@@ -479,7 +479,10 @@ def main():
 
                         update_prbs_and_remove_stale_ues(ue_data, bits_tuple, max_stale_steps)
 
-                        count_pkl -= 1
+                        # Try to slow down the frequency of changes during random evaluation so that we are not making
+                        # overlapping changes from multiple UEs in one time step
+                        # count_pkl -= 1
+                        count_pkl -= sum(slice_counts.values())
                         logging.debug(f'Resenting count_pkl to {count_pkl}')
 
 
