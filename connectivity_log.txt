@@ -688,3 +688,83 @@ ERROR: Unable to SSH into genesys-070. Connection failed.
 ERROR: No packets received. Network connection for genesys-071 failed.
 SUCCESS: Network connection for genesys-072 is up.
 SUCCESS: Network connection for genesys-074 is up.
+SUCCESS: Network connection for genesys-039 is up.
+SUCCESS: Network connection for genesys-044 is up.
+SUCCESS: Network connection for genesys-046 is up.
+ERROR: Network is unreachable. Network connection for genesys-056 failed.
+ERROR: Network is unreachable. Network connection for genesys-098 failed.
+ERROR: Network is unreachable. Network connection for genesys-099 failed.
+ERROR: Network is unreachable. Network connection for genesys-100 failed.
+ERROR: Network is unreachable. Network connection for genesys-101 failed.
+ERROR: Network is unreachable. Network connection for genesys-114 failed.
+ERROR: Unable to SSH into genesys-. Connection failed.
+ERROR: Network is unreachable. Network connection for genesys-063 failed.
+ERROR: Network is unreachable. Network connection for genesys-065 failed.
+ERROR: Network is unreachable. Network connection for genesys-066 failed.
+ERROR: Unable to SSH into genesys-070. Connection failed.
+ERROR: Network is unreachable. Network connection for genesys-071 failed.
+ERROR: Network is unreachable. Network connection for genesys-072 failed.
+ERROR: Network is unreachable. Network connection for genesys-074 failed.
+ERROR: Network is unreachable. Network connection for genesys-075 failed.
+ERROR: Network is unreachable. Network connection for genesys-077 failed.
+ERROR: Unable to SSH into genesys-. Connection failed.
+SUCCESS: Network connection for genesys-022 is up.
+ERROR: Network is unreachable. Network connection for genesys-023 failed.
+ERROR: Network is unreachable. Network connection for genesys-025 failed.
+ERROR: Network is unreachable. Network connection for genesys-026 failed.
+ERROR: Network is unreachable. Network connection for genesys-029 failed.
+ERROR: Network is unreachable. Network connection for genesys-030 failed.
+ERROR: Network is unreachable. Network connection for genesys-087 failed.
+ERROR: Network is unreachable. Network connection for genesys-091 failed.
+ERROR: Network is unreachable. Network connection for genesys-092 failed.
+ERROR: Unable to SSH into genesys-. Connection failed.
+SUCCESS: Network connection for genesys-039 is up.
+SUCCESS: Network connection for genesys-044 is up.
+SUCCESS: Network connection for genesys-046 is up.
+ERROR: Network is unreachable. Network connection for genesys-056 failed.
+ERROR: Network is unreachable. Network connection for genesys-059 failed.
+ERROR: Network is unreachable. Network connection for genesys-063 failed.
+ERROR: Network is unreachable. Network connection for genesys-065 failed.
+ERROR: Network is unreachable. Network connection for genesys-066 failed.
+ERROR: Unable to SSH into genesys-070. Connection failed.
+ERROR: Unable to SSH into genesys-. Connection failed.
+SUCCESS: Network connection for genesys-074 is up.
+SUCCESS: Network connection for genesys-075 is up.
+ERROR: Network is unreachable. Network connection for genesys-077 failed.
+SUCCESS: Network connection for genesys-083 is up.
+ERROR: Network is unreachable. Network connection for genesys-087 failed.
+ERROR: Network is unreachable. Network connection for genesys-099 failed.
+ERROR: Network is unreachable. Network connection for genesys-100 failed.
+ERROR: Network is unreachable. Network connection for genesys-101 failed.
+ERROR: Network is unreachable. Network connection for genesys-114 failed.
+ERROR: Unable to SSH into genesys-. Connection failed.
+SUCCESS: Network connection for genesys-022 is up.
+ERROR: Network is unreachable. Network connection for genesys-023 failed.
+ERROR: Network is unreachable. Network connection for genesys-025 failed.
+ERROR: Network is unreachable. Network connection for genesys-026 failed.
+ERROR: Network is unreachable. Network connection for genesys-029 failed.
+ERROR: Network is unreachable. Network connection for genesys-030 failed.
+ERROR: Network is unreachable. Network connection for genesys-032 failed.
+ERROR: Network is unreachable. Network connection for genesys-091 failed.
+ERROR: Network is unreachable. Network connection for genesys-092 failed.
+ERROR: Unable to SSH into genesys-. Connection failed.
+SUCCESS: Network connection for genesys-075 is up.
+ERROR: Network is unreachable. Network connection for genesys-077 failed.
+SUCCESS: Network connection for genesys-083 is up.
+ERROR: Network is unreachable. Network connection for genesys-087 failed.
+ERROR: Network is unreachable. Network connection for genesys-098 failed.
+ERROR: Network is unreachable. Network connection for genesys-099 failed.
+ERROR: Network is unreachable. Network connection for genesys-100 failed.
+ERROR: Network is unreachable. Network connection for genesys-101 failed.
+ERROR: Network is unreachable. Network connection for genesys-114 failed.
+ERROR: Unable to SSH into genesys-. Connection failed.
+SUCCESS: Network connection for genesys-022 is up.
+ERROR: Network is unreachable. Network connection for genesys-023 failed.
+ERROR: Network is unreachable. Network connection for genesys-025 failed.
+ERROR: Network is unreachable. Network connection for genesys-026 failed.
+ERROR: Network is unreachable. Network connection for genesys-029 failed.
+ERROR: Network is unreachable. Network connection for genesys-030 failed.
+ERROR: Network is unreachable. Network connection for genesys-032 failed.
+ERROR: Network is unreachable. Network connection for genesys-091 failed.
+ERROR: Network is unreachable. Network connection for genesys-092 failed.
+ERROR: Unable to SSH into genesys-. Connection failed.
