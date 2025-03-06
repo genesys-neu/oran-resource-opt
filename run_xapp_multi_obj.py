@@ -427,7 +427,10 @@ def main():
                         ue['inference_kpi'].pop(0)
                         logging.debug(f'Removing first entry in list, length is now {len(ue["inference_kpi"])}')
 
-                    updated_slice_message = f'00{imsi}::{current_slice}'
+                    # For now, we are using a dummy imsi to ensure we don't keep changing the slice assignment
+                    updated_slice_message = f'001010123456025::{current_slice}'
+                    # Eventually we will switch back to something like the following
+                    # updated_slice_message = f'00{imsi}::{current_slice}'
 
                     # After updating ue_data, count UEs assigned to each slice and get PRBs
                     slice_counts, slice_prbs, slice_schedule = count_ue_assignments()
