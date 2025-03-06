@@ -449,11 +449,12 @@ def main():
                                                                     agent, agent_name)
                         schedule_tuple = update_schedule_conf(slice_schedule)
                         new_mcs = update_mcs_conf(ue['mcs'])
+                        logging.info(f'Updating UE {imsi} MCS to {new_mcs} at time {curr_timestamp}')
                         ue['mcs'] = new_mcs
                         if 1000*(time.perf_counter() - start_time) > 250:
                             dl_power = update_power_conf(dl_power)
                             start_time = time.perf_counter()
-                            logging.info(f'Updating power to {dl_power}')
+                            logging.info(f'Updating power to {dl_power} at time {curr_timestamp}')
 
                         # Format the control message with the new PRB assignment
                         # expected control looks like: '1,0,0\n3,5,9\n<imsi>::<slice ID>\n<imsi>::MCS\n<imsi>::gainEND'

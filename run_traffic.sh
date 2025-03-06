@@ -131,7 +131,7 @@ update_slice_users() {
 
     echo "Updating UE slice assignment with $sed_commands"
     # Run the accumulated sed commands in a single SSH session to update the file
-    sshpass -p 'scope' ssh $gnb "$sed_commands"
+    sshpass -p 'scope' ssh "$gnb" "$sed_commands"
 
     # Sleep to ensure everything is applied
     sleep 5
