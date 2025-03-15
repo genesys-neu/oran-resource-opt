@@ -31,11 +31,11 @@ user_tuples[6]="2 1 3"
 user_tuples[7]="1 1 1"
 user_tuples[8]="2 4 1"
 user_tuples[9]="1 2 3"
-user_tuples[10]="3 3 1"
+user_tuples[10]="1 3 3"
 user_tuples[11]="2 3 2"
 user_tuples[12]="1 3 3"
 user_tuples[13]="2 1 2"
-user_tuples[14]="3 1 1"
+user_tuples[14]="1 2 4"
 user_tuples[15]="1 1 3"
 
 # Function to generate random slice configuration
