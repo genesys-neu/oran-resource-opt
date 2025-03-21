@@ -374,6 +374,7 @@ def main():
     print('Start listening on E2 interface...')
     logging.info('Finished initialization')
     start_time = time.perf_counter()
+    start_time_power = time.perf_counter()
 
     while True:
         data_sck = receive_from_socket(control_sck)
@@ -446,17 +447,17 @@ def main():
                                   f'Slice 1: {slice_counts[1]} UEs, PRB bits: {slice_prb1}, '
                                   f'Slice 2: {slice_counts[2]} UEs, PRB bits: {slice_prb2}')
 
-                    if count_pkl > 15:
-
+                    if count_pkl > 15 and (time.perf_counter()-start_time) > 2:
+                        start_time = time.perf_counter()
                         bits_tuple = update_prb_conf(slice_counts, slice_prb0, slice_prb1, slice_prb2,
                                                                     agent, agent_name)
                         schedule_tuple = update_schedule_conf(slice_schedule)
                         new_mcs = update_mcs_conf(ue['mcs'])
                         logging.info(f'Updating UE {imsi} MCS to {new_mcs} at time {curr_timestamp}')
                         ue['mcs'] = new_mcs
-                        if 1000*(time.perf_counter() - start_time) > 250:
+                        if 1000*(time.perf_counter() - start_time_power) > 250:
                             dl_power = update_power_conf(dl_power)
-                            start_time = time.perf_counter()
+                            start_time_power = time.perf_counter()
                             logging.info(f'Updating power to {dl_power} at time {curr_timestamp}')
 
                         # Format the control message with the new PRB assignment
