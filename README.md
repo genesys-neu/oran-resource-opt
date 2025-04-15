@@ -1,9 +1,37 @@
-# Dynamic Open RAN Optimization Framework using Colosseum 
+# Dynamic Open RAN Optimization Framework using Colosseum
 
 ## Introduction
-This repository focuses on a rapidly deployable Open RAN framework with automated setup and experiment execution in the Colosseum testbed.
-This repository automates the setup for running traffic and interference simulations in a cellular ORAN network environment using Bash scripts. It streamlines the configuration of various network components and initiates the necessary actions to simulate network traffic and interference.
 
+This repository supports a rapidly deployable and fully automated Open RAN experimentation framework built on the **Colosseum** testbed. It streamlines the configuration of srsRAN-based cellular components and enables quick deployment of traffic and interference simulations across network slices using Bash scripts.
+
+Our framework was developed alongside the research presented in [our paper](https://arxiv.org/abs/2312.07896), which explores the use of **machine learning (ML)** for dynamic O-RAN control and optimization. Key contributions include:
+
+- A real-world dataset of diverse traffic and mobility scenarios captured via the Colosseum RF emulator.  
+  📂 You can access the full dataset here: [Northeastern University Digital Repository](https://repository.library.northeastern.edu/collections/neu:kw52j826q)
+- An ML-based traffic classification pipeline supporting rapid training, deployment, and real-time adaptation, achieving up to **99% offline** and **92% online** classification accuracy.
+- A reinforcement learning strategy for **Physical Resource Block (PRB)** allocation, which outperforms expert and random baselines in both performance and consistency (CV reduced by up to an order of magnitude).
+
+This repository, along with our open-source tools and datasets, enables reproducible experimentation and accelerates research in O-RAN and ML-driven network optimization.
+
+> ⚠️ If you use this framework or dataset, please consider citing our paper:
+>
+> ```bibtex
+> @misc{groen2025classificationoptimizationslicingresource,
+>       title={From Classification to Optimization: Slicing and Resource Management with TRACTOR}, 
+>       author={Joshua Groen and Zixian Yang and Divyadharshini Muruganandham and Mauro Belgiovine and Lei Ying and Kaushik Chowdhury},
+>       year={2025},
+>       eprint={2312.07896},
+>       archivePrefix={arXiv},
+>       primaryClass={eess.SY},
+>       url={https://arxiv.org/abs/2312.07896}, 
+> }
+> ```
+
+
+
+
+
+## Usage
 > **Note**: When cloning this repository, ensure you include the submodules by running the following command:
 > ```bash
 > git clone --recurse-submodules <https://github.com/genesys-neu/oran-resource-opt.git>
@@ -16,7 +44,6 @@ You must first make a reservation in Colosseum for 2 to 12 nodes. Use the follow
 - IMPACT-UE for 1-10 UEs
 - IMPACT-RIC for the near-RT RIC
 
-## Usage
 To run an experiment, execute the following command in the terminal:
 ```
 ./run_experiment.sh config_file.txt
