@@ -232,3 +232,14 @@ All the traffic traces used for both traffic classification and PRB optimization
 ## Disclaimer
 These scripts are provided as-is and may require customization based on individual network configurations and environment setups.
 
+
+## License
+License and Citation
+
+The source code in this repository is released under the MIT License. See the LICENSE file for details.
+
+The dataset associated with this work is hosted separately and is subject to the terms specified by the hosting repository. The published paper is subject to the publisher's copyright and licensing terms.
+
+If you use the code or dataset in academic work, please cite:
+> J. Groen, Z. Yang, D. Muruganandham, M. Belgiovine, L. Ying, and K. Chowdhury, “From classification to optimization: Slicing and resource management with TRACTOR,” Computer Communications, vol. 257, 2026, Art. no. 108625. https://doi.org/10.1016/j.comcom.2026.108625
+
