@@ -4,7 +4,7 @@
 
 This repository supports a rapidly deployable and fully automated Open RAN experimentation framework built on the **Colosseum** testbed. It streamlines the configuration of srsRAN-based cellular components and enables quick deployment of traffic and interference simulations across network slices using Bash scripts.
 
-Our framework was developed alongside the research presented in [our paper](https://arxiv.org/abs/2312.07896), which explores the use of **machine learning (ML)** for dynamic O-RAN control and optimization. Key contributions include:
+Our framework was developed alongside the research presented in [our paper](https://www.sciencedirect.com/science/article/pii/S014036642600215X?casa_token=TITjgshl7MYAAAAA:1tgWczxCbCqXzCy1FmcKaVa7hae21UM1nhd9KeJbuEpyuHBU0lPXKxFnDXxNsRjqx7eJkDY4kiQ), which explores the use of **machine learning (ML)** for dynamic O-RAN control and optimization. Key contributions include:
 
 - A real-world dataset of diverse traffic and mobility scenarios captured via the Colosseum RF emulator.  
   📂 You can access the full dataset here: [Northeastern University Digital Repository](https://repository.library.northeastern.edu/collections/neu:kw52j826q)
@@ -16,14 +16,17 @@ This repository, along with our open-source tools and datasets, enables reproduc
 > ⚠️ If you use this framework or dataset, please consider citing our paper:
 >
 > ```bibtex
-> @misc{groen2025classificationoptimizationslicingresource,
->       title={From Classification to Optimization: Slicing and Resource Management with TRACTOR}, 
->       author={Joshua Groen and Zixian Yang and Divyadharshini Muruganandham and Mauro Belgiovine and Lei Ying and Kaushik Chowdhury},
->       year={2025},
->       eprint={2312.07896},
->       archivePrefix={arXiv},
->       primaryClass={eess.SY},
->       url={https://arxiv.org/abs/2312.07896}, 
+> @article{groen2026classificationoptimizationslicingresource,
+>   title={From classification to optimization: Slicing and resource management with TRACTOR},
+>   author={Groen, Joshua and Yang, Zixian and Muruganandham, Divyadharshini and Belgiovine, Mauro and Ying, Lei and Chowdhury, Kaushik},
+>   journal={Computer Communications},
+>   volume={257},
+>   pages={108625},
+>   year={2026},
+>   issn={0140-3664},
+>   publisher={Elsevier},
+>   doi={10.1016/j.comcom.2026.108625},
+>   url={https://doi.org/10.1016/j.comcom.2026.108625}
 > }
 > ```
 
